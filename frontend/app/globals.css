@@ -1,0 +1,126 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Crimson+Pro:wght@300;400;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --water-flow: #0ea5e9;
+    --earth-warm: #a89277;
+    --fresh-green: #22c55e;
+  }
+  
+  * {
+    @apply border-water-200;
+  }
+  
+  body {
+    @apply bg-gradient-to-br from-water-50 via-white to-earth-50 font-serif text-earth-900;
+    min-height: 100vh;
+    position: relative;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: 
+      url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%230ea5e9' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-mono font-bold;
+  }
+}
+
+@layer components {
+  .container-custom {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+
+  .glass-card {
+    @apply bg-white/70 backdrop-blur-md border border-water-200/50 rounded-2xl shadow-lg;
+  }
+
+  .water-gradient {
+    @apply bg-gradient-to-br from-water-400 via-water-500 to-water-600;
+  }
+
+  .score-badge {
+    @apply inline-flex items-center justify-center rounded-full font-mono font-bold;
+  }
+
+  .btn-primary {
+    @apply px-6 py-3 bg-water-600 hover:bg-water-700 text-white font-mono rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl;
+  }
+
+  .data-card {
+    @apply glass-card p-6 hover:shadow-xl transition-all duration-300;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+  
+  .animation-delay-200 {
+    animation-delay: 200ms;
+  }
+  
+  .animation-delay-400 {
+    animation-delay: 400ms;
+  }
+  
+  .animation-delay-600 {
+    animation-delay: 600ms;
+  }
+
+  .animation-delay-800 {
+    animation-delay: 800ms;
+  }
+}
+
+/* Animace pro vodní efekt */
+@keyframes ripple {
+  0% {
+    transform: scale(0.8);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(2.4);
+    opacity: 0;
+  }
+}
+
+.ripple {
+  animation: ripple 3s cubic-bezier(0, 0.2, 0.8, 1) infinite;
+}
+
+/* Smooth scroll */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-water-50;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-water-400 rounded-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-water-600;
+}

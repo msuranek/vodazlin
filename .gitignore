@@ -1,0 +1,38 @@
+# === OS ===
+.DS_Store
+Thumbs.db
+
+# === IDE ===
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# === Archivy ===
+*.zip
+
+# === Docs a pomocné soubory ===
+docs/
+
+# === Claude ===
+.claude/
+
+# === Next.js / Node ===
+frontend/node_modules/
+frontend/.next/
+frontend/out/
+frontend/build/
+frontend/.env
+frontend/.env*.local
+frontend/.vercel/
+frontend/npm-debug.log*
+
+# === Python ===
+scraper/__pycache__/
+scraper/**/__pycache__/
+scraper/.venv/
+scraper/venv/
+scraper/.env
+
+# === Scraper output ===
+scraper/data/
