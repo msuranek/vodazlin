@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "pdf-parse": "^1.1.1",
     "@types/leaflet": "^1.9.21",
     "clsx": "^2.1.0",
     "framer-motion": "^11.0.0",

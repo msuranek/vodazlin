@@ -6,6 +6,9 @@ const nextConfig = {
     domains: ['localhost'],
     unoptimized: true,
   },
+  experimental: {
+    serverComponentsExternalPackages: ['pdf-parse'],
+  },
 }
 
 module.exports = nextConfig
