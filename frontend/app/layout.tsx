@@ -21,6 +21,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="cs">
+      <head>
+        <script defer src="https://analytics.aidevelopers.cz/script.js" data-website-id="bafb76b0-5de6-4d78-a030-b54aa4c5e9be"></script>
+      </head>
       <body className="antialiased">
         {children}
       </body>
