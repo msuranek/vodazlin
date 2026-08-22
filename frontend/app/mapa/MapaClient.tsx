@@ -148,6 +148,8 @@ export default function MapaClient({ sources, districts }: Props) {
               <div className="glass-card p-4 bg-gradient-to-br from-water-50 to-earth-50">
                 <div className="aspect-video rounded-xl overflow-hidden">
                   <ZlinMap
+                    sources={sources}
+                    districts={districts}
                     selectedSource={selectedSource}
                     selectedDistrict={selectedDistrict}
                     onSelectSource={(id) => {

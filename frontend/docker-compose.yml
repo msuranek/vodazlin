@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   vodazlin:
     build:
@@ -8,12 +6,4 @@ services:
     container_name: vodazlin
     restart: unless-stopped
     ports:
-      - "3000:3000"
-    environment:
-      - NODE_ENV=production
-      - NEXT_TELEMETRY_DISABLED=1
-    volumes:
-      - vodazlin_data:/app/data
-
-volumes:
-  vodazlin_data:
+      - "8080:80"

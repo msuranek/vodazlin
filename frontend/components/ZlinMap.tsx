@@ -3,7 +3,7 @@
 import { MapContainer, TileLayer, Marker, Popup, Circle } from "react-leaflet";
 import { Icon, LatLngExpression } from "leaflet";
 import "leaflet/dist/leaflet.css";
-import { waterSources, zlínDistricts } from "@/lib/data";
+import type { waterSources, zlínDistricts } from "@/lib/data";
 
 // Fix for default marker icon in Next.js
 const waterIcon = new Icon({
@@ -16,6 +16,8 @@ const waterIcon = new Icon({
 });
 
 interface ZlinMapProps {
+  sources: typeof waterSources;
+  districts: typeof zlínDistricts;
   onSelectSource?: (sourceId: string) => void;
   onSelectDistrict?: (districtId: string) => void;
   selectedSource?: string | null;
@@ -23,6 +25,8 @@ interface ZlinMapProps {
 }
 
 export default function ZlinMap({
+  sources,
+  districts,
   onSelectSource,
   onSelectDistrict,
   selectedSource,
@@ -60,7 +64,7 @@ export default function ZlinMap({
       />
 
       {/* Úpravny vody */}
-      {waterSources.map((source) => (
+      {sources.map((source) => (
         <Marker
           key={source.id}
           position={[source.location.lat, source.location.lng]}
@@ -89,7 +93,7 @@ export default function ZlinMap({
       ))}
 
       {/* Městské části jako kruhy */}
-      {zlínDistricts.map((district) => {
+      {districts.map((district) => {
         const position = districtPositions[district.id];
         if (!position) return null;
 

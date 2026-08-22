@@ -1,13 +1,10 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  output: 'standalone',
+  output: 'export',
+  trailingSlash: true,
   images: {
-    domains: ['localhost'],
     unoptimized: true,
-  },
-  experimental: {
-    serverComponentsExternalPackages: ['pdf-parse'],
   },
 }
 
