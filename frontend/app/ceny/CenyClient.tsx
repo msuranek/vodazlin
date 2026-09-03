@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import {
@@ -47,11 +48,33 @@ export default function CenyClient({ pricing, meta }: Props) {
           </p>
           <div className="flex items-center gap-2 text-sm text-earth-600">
             <Calendar className="h-4 w-4" />
-            <span>Poslední aktualizace: {formatDate(meta.lastUpdate)}</span>
+            <span>Poslední aktualizace ceníku: {formatDate(meta.pricesUpdatedAt)}</span>
           </div>
         </section>
 
         <section className="container-custom py-8">
+          <div className="max-w-4xl mb-10">
+            <h2 className="text-2xl font-mono font-bold text-earth-900 mb-4">
+              Jak se cena vody skládá
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-earth-700 leading-relaxed">
+              <p>
+                Vodné je cena za dodání pitné vody do odběrného místa. Stočné
+                pokrývá odvádění a čištění odpadní vody. Výsledná částka pro
+                domácnost závisí na spotřebě a na tom, zda se uvádí cena s DPH
+                nebo bez DPH.
+              </p>
+              <p>
+                Kalkulačka níže používá orientační roční spotřebu. Skutečný účet
+                ovlivní počet osob, způsob používání vody, zahrada, bazén i stav
+                rozvodů. Souvislosti najdete také v metodice{" "}
+                <Link href="/o-projektu/" className="text-water-700 underline underline-offset-4">
+                  O projektu
+                </Link>.
+              </p>
+            </div>
+          </div>
+
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div className="glass-card p-6">
               <div className="flex items-center gap-3 mb-4">
@@ -262,6 +285,33 @@ export default function CenyClient({ pricing, meta }: Props) {
                 {pricing.averageConsumption.household4} m³
               </p>
               <p className="text-sm text-earth-600">4 osoby za rok</p>
+            </div>
+          </div>
+        </section>
+
+        <section className="container-custom pb-16">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="glass-card p-6">
+              <h2 className="text-xl font-mono font-bold text-earth-900 mb-3">Pro jaké období platí</h2>
+              <p className="text-sm text-earth-700 leading-relaxed">
+                Ceník na této stránce je uveden jako platný od {pricing.validFrom}.
+                Datum aktualizace znamená, kdy byl ceník naposledy načten do
+                statického snapshotu webu.
+              </p>
+            </div>
+            <div className="glass-card p-6">
+              <h2 className="text-xl font-mono font-bold text-earth-900 mb-3">Jak počítáme odhad</h2>
+              <p className="text-sm text-earth-700 leading-relaxed">
+                Roční spotřebu násobíme součtem vodného a stočného s DPH.
+                Měsíční částka je roční odhad rozdělený na dvanáct měsíců.
+              </p>
+            </div>
+            <div className="glass-card p-6">
+              <h2 className="text-xl font-mono font-bold text-earth-900 mb-3">Co ovlivní skutečný účet</h2>
+              <p className="text-sm text-earth-700 leading-relaxed">
+                Vedle počtu osob hraje roli myčka, pračka, sprchování, napouštění
+                vany, zalévání i případné úniky vody v instalaci.
+              </p>
             </div>
           </div>
         </section>

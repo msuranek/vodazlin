@@ -1,6 +1,6 @@
 "use client";
 
-import { cn } from "@/lib/utils";
+import { cn, formatNumber } from "@/lib/utils";
 import { LucideIcon } from "lucide-react";
 
 interface ParameterCardProps {
@@ -38,6 +38,8 @@ export default function ParameterCard({
     bad: "text-red-600",
   };
 
+  const formatLimit = (num: number) => formatNumber(num, num > 0 && num < 1 ? 2 : 1);
+
   return (
     <div className="data-card group">
       <div className="flex items-start justify-between mb-3">
@@ -69,12 +71,12 @@ export default function ParameterCard({
       {limit && (
         <div className="mt-3 pt-3 border-t border-water-100">
           <div className="text-xs text-earth-600 space-y-1">
-            {limit.max && (
+            {limit.max !== undefined && (
               <div className="flex justify-between">
                 <span>Hygienický limit:</span>
                 <span className="font-mono font-medium">
-                  {limit.min && `${limit.min} - `}
-                  {limit.max} {unit}
+                  {limit.min !== undefined && `${formatLimit(limit.min)} - `}
+                  {formatLimit(limit.max)} {unit}
                 </span>
               </div>
             )}
@@ -82,7 +84,7 @@ export default function ParameterCard({
               <div className="flex justify-between">
                 <span>Optimální rozsah:</span>
                 <span className="font-mono font-medium text-fresh-600">
-                  {limit.optimal[0]} - {limit.optimal[1]} {unit}
+                  {formatLimit(limit.optimal[0])} - {formatLimit(limit.optimal[1])} {unit}
                 </span>
               </div>
             )}

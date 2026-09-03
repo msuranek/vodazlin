@@ -12,6 +12,7 @@ export default function Header() {
     { name: "Kvalita", href: "/kvalita" },
     { name: "Ceny", href: "/ceny" },
     { name: "Mapa", href: "/mapa" },
+    { name: "O projektu", href: "/o-projektu" },
   ];
 
   return (

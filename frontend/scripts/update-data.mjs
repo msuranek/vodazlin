@@ -25,7 +25,7 @@ const DEFAULT_WATER_QUALITY = {
     enterococci: 0,
     coliformBacteria: 0,
   },
-  score: 92,
+  score: 91,
   status: 'excellent',
 }
 
@@ -87,6 +87,21 @@ const DEFAULT_WATER_SOURCES = [
   },
 ]
 
+const DEFAULT_METADATA = {
+  lastUpdate: '2025-01-26',
+  waterQualityUpdatedAt: '2025-01-26T10:00:00Z',
+  pricesUpdatedAt: '2025-01-01',
+  siteDataUpdatedAt: '2025-01-26T10:00:00Z',
+  sources: [
+    { name: 'Vodárna Zlín a.s.', url: 'https://www.vodarnazlin.cz' },
+    { name: 'EuroClean - tvrdost vody', url: 'https://euroclean.cz/problemy-vody/tvrda-voda/zlin/' },
+    { name: 'Pravda o vodě', url: 'https://pravdaovode.cz/cena-vody-zlin/' },
+  ],
+  updateFrequency: 'čtvrtletně',
+  pricingUpdateFrequency: 'ročně podle zveřejněného ceníku',
+  hardnessUpdateFrequency: 'podle dostupných veřejných podkladů',
+}
+
 function ensureDir() {
   fs.mkdirSync(DATA_DIR, { recursive: true })
 }
@@ -121,6 +136,55 @@ function normalizeHardness(value) {
     hardness: Math.round(value * 100) / 100,
     hardnessMmol: Math.round((value / 5.608) * 100) / 100,
   }
+}
+
+function calculateWaterQuality(params, bacteriological) {
+  let score = 96
+
+  if (params.hardness < 7) {
+    score -= Math.min(12, (7 - params.hardness) * 2)
+  } else if (params.hardness > 14) {
+    score -= Math.min(12, (params.hardness - 14) * 1.5)
+  }
+
+  score -= Math.min(8, Math.abs(params.pH - 7.4) * 2)
+  if (params.pH < 6.5) {
+    score -= 20 + (6.5 - params.pH) * 10
+  } else if (params.pH > 8.5) {
+    score -= 20 + (params.pH - 8.5) * 10
+  }
+
+  score -= Math.min(10, (params.nitrates / 50) * 6)
+  if (params.nitrates > 50) {
+    score -= 30
+  } else if (params.nitrates > 25) {
+    score -= (params.nitrates - 25) * 0.8
+  }
+
+  if (typeof params.iron === 'number') {
+    score -= Math.min(6, (params.iron / 0.2) * 3)
+  }
+  if (typeof params.iron === 'number' && params.iron > 0.2) {
+    score -= (params.iron - 0.2) * 50
+  }
+
+  if (typeof params.manganese === 'number') {
+    score -= Math.min(6, (params.manganese / 0.05) * 3)
+  }
+  if (typeof params.manganese === 'number' && params.manganese > 0.05) {
+    score -= (params.manganese - 0.05) * 100
+  }
+
+  const hasBacteria =
+    (bacteriological?.ecoli ?? 0) > 0 ||
+    (bacteriological?.enterococci ?? 0) > 0 ||
+    (bacteriological?.coliformBacteria ?? 0) > 0
+
+  if (hasBacteria) {
+    score -= 40
+  }
+
+  return Math.max(0, Math.min(100, Math.round(score)))
 }
 
 async function scrapePricing() {
@@ -191,12 +255,15 @@ async function scrapeWaterHardness() {
 async function main() {
   const results = {}
   const errors = []
+  const metadata = readJson('metadata.json', DEFAULT_METADATA)
+  const now = new Date().toISOString()
 
   ensureDir()
 
   try {
     const pricing = await scrapePricing()
     writeJson('pricing.json', pricing)
+    metadata.pricesUpdatedAt = pricing.lastUpdate
     results.pricing = { updated: true, data: pricing }
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error)
@@ -229,6 +296,7 @@ async function main() {
       })
 
       writeJson('water_sources.json', updated)
+      metadata.waterQualityUpdatedAt = now
       results.waterHardness = {
         updated: true,
         klecuvka: hardness.klecuvka,
@@ -249,7 +317,8 @@ async function main() {
 
   try {
     const quality = readJson('water_quality.json', DEFAULT_WATER_QUALITY)
-    quality.timestamp = new Date().toISOString()
+    quality.timestamp = now
+    quality.score = calculateWaterQuality(quality.parameters, quality.bacteriological)
     writeJson('water_quality.json', quality)
     results.timestamp = { updated: true, value: quality.timestamp }
   } catch (error) {
@@ -257,6 +326,11 @@ async function main() {
     errors.push(`timestamp: ${message}`)
     results.timestamp = { updated: false, error: message }
   }
+
+  metadata.lastUpdate = now.split('T')[0]
+  metadata.siteDataUpdatedAt = now
+  writeJson('metadata.json', metadata)
+  results.metadata = { updated: true, data: metadata }
 
   console.log(JSON.stringify({ ok: errors.length === 0, results, errors }, null, 2))
   if (errors.length > 0) process.exitCode = 1

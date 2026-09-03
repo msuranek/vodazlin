@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import WaterScore from "@/components/WaterScore";
@@ -31,7 +32,7 @@ interface Props {
 }
 
 export default function KvalitaClient({ quality, historical, sources, limits, meta }: Props) {
-  const { parameters, bacteriological, score, timestamp } = quality;
+  const { parameters, bacteriological, score } = quality;
   const [expandedSource, setExpandedSource] = useState<string | null>(null);
 
   return (
@@ -47,20 +48,50 @@ export default function KvalitaClient({ quality, historical, sources, limits, me
               </h1>
               <p className="text-lg text-earth-700 mb-6">
                 Podrobný přehled všech měřených parametrů pitné vody.
-                Data jsou aktualizována {meta.updateFrequency}.
+                Data jsou aktualizována podle dostupných veřejných měření,
+                obvykle {meta.updateFrequency}.
               </p>
               <div className="flex items-center gap-2 text-sm text-earth-600">
                 <Calendar className="h-4 w-4" />
-                <span>Poslední aktualizace: {formatDate(meta.lastUpdate)}</span>
+                <span>Poslední aktualizace: {formatDate(meta.waterQualityUpdatedAt)}</span>
               </div>
             </div>
             <div className="flex-shrink-0">
-              <WaterScore score={score} size="md" />
+              <div className="max-w-xs">
+                <WaterScore score={score} size="md" />
+                <p className="mt-3 text-xs text-earth-600 text-center leading-relaxed">
+                  Orientační index počítáme z tvrdosti, pH, dusičnanů, železa,
+                  manganu a mikrobiologických ukazatelů. Maximum je záměrně
+                  rezervované, aby index nepůsobil jako laboratorní garance.
+                </p>
+              </div>
             </div>
           </div>
         </section>
 
         <section className="container-custom py-8">
+          <div className="max-w-4xl mb-10">
+            <h2 className="text-2xl font-mono font-bold text-earth-900 mb-4">
+              Jak číst výsledky kvality vody
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-earth-700 leading-relaxed">
+              <p>
+                Jednotlivé hodnoty je potřeba číst podle jednotek a limitů.
+                Některé parametry, například E. coli nebo enterokoky, mají
+                hygienický význam okamžitě. Jiné, například tvrdost, více
+                ovlivňují chuť vody a provoz domácích spotřebičů.
+              </p>
+              <p>
+                Orientační index shrnuje vybrané parametry do jednoho čísla,
+                ale závazný je vždy konkrétní rozbor a oficiální informace.
+                Podrobnější popis výpočtu je na stránce{" "}
+                <Link href="/o-projektu/" className="text-water-700 underline underline-offset-4">
+                  O projektu
+                </Link>.
+              </p>
+            </div>
+          </div>
+
           <h2 className="text-2xl font-mono font-bold text-earth-900 mb-6">
             Zdroje pitné vody
           </h2>
@@ -140,6 +171,58 @@ export default function KvalitaClient({ quality, historical, sources, limits, me
             <ParameterCard icon={Waves} label="Hořčík" value={formatNumber(parameters.magnesium)} unit="mg/l" status="good" description="Mg" limit={limits.magnesium} />
             <ParameterCard icon={Beaker} label="Chloridy" value={formatNumber(parameters.chlorides)} unit="mg/l" status="good" description="Cl⁻" limit={{ max: 250, optimal: [0, 100] }} />
             <ParameterCard icon={Beaker} label="Sírany" value={formatNumber(parameters.sulfates)} unit="mg/l" status="good" description="SO₄²⁻" limit={{ max: 250, optimal: [0, 150] }} />
+          </div>
+        </section>
+
+        <section className="container-custom py-8">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div>
+              <h2 className="text-2xl font-mono font-bold text-earth-900 mb-4">
+                Co znamenají hlavní parametry
+              </h2>
+              <p className="text-earth-700 leading-relaxed">
+                Hodnoty v tabulkách dávají smysl až ve vztahu k limitu,
+                doporučenému rozsahu a účelu parametru.
+              </p>
+            </div>
+            <div className="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-5">
+              <div className="glass-card p-5">
+                <h3 className="text-lg font-mono font-bold text-earth-900 mb-2">Tvrdost vody</h3>
+                <p className="text-sm text-earth-700 leading-relaxed">
+                  Vyjadřuje obsah vápníku a hořčíku. Středně tvrdá voda je běžná,
+                  ale může tvořit vodní kámen. Více na stránce{" "}
+                  <Link href="/tvrdost-vody-zlin/" className="text-water-700 underline underline-offset-4">
+                    tvrdost vody ve Zlíně
+                  </Link>.
+                </p>
+              </div>
+              <div className="glass-card p-5">
+                <h3 className="text-lg font-mono font-bold text-earth-900 mb-2">pH</h3>
+                <p className="text-sm text-earth-700 leading-relaxed">
+                  Popisuje kyselost nebo zásaditost vody. Pitná voda má být v
+                  povoleném rozsahu; malé rozdíly uvnitř něj obvykle nejsou samy
+                  o sobě problém.
+                </p>
+              </div>
+              <div className="glass-card p-5">
+                <h3 className="text-lg font-mono font-bold text-earth-900 mb-2">Dusičnany</h3>
+                <p className="text-sm text-earth-700 leading-relaxed">
+                  Sledují se vůči limitu 50 mg/l. Důležité jsou hlavně pro
+                  citlivější skupiny obyvatel. Více vysvětluje stránka{" "}
+                  <Link href="/dusicnany-v-pitne-vode/" className="text-water-700 underline underline-offset-4">
+                    dusičnany v pitné vodě
+                  </Link>.
+                </p>
+              </div>
+              <div className="glass-card p-5">
+                <h3 className="text-lg font-mono font-bold text-earth-900 mb-2">Mikrobiologie</h3>
+                <p className="text-sm text-earth-700 leading-relaxed">
+                  U E. coli a enterokoků se očekává nulový nález. Při nenulovém
+                  nálezu je nutné řídit se oficiálními pokyny provozovatele nebo
+                  hygienické stanice.
+                </p>
+              </div>
+            </div>
           </div>
         </section>
 

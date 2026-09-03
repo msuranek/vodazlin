@@ -15,16 +15,17 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { formatNumber, formatCurrency, formatDate } from "@/lib/utils";
-import type { currentWaterQuality, waterPricing } from "@/lib/data";
+import type { currentWaterQuality, dataMetadata, waterPricing } from "@/lib/data";
 
 interface Props {
   quality: typeof currentWaterQuality;
   pricing: typeof waterPricing;
+  meta: typeof dataMetadata;
 }
 
-export default function HomeClient({ quality, pricing }: Props) {
-  const { parameters, bacteriological, score, timestamp } = quality;
-  const lastUpdate = new Date(timestamp);
+export default function HomeClient({ quality, pricing, meta }: Props) {
+  const { parameters, bacteriological, score } = quality;
+  const lastUpdate = new Date(meta.siteDataUpdatedAt);
 
   return (
     <div className="min-h-screen flex flex-col relative">
@@ -48,7 +49,8 @@ export default function HomeClient({ quality, pricing }: Props) {
 
               <p className="text-lg md:text-xl text-earth-700 leading-relaxed">
                 Transparentní přístup k datům o vaší pitné vodě. Sledujte
-                kvalitu, tvrdost a další parametry v reálném čase.
+                pravidelně aktualizované údaje o kvalitě, tvrdosti a dalších
+                parametrech.
               </p>
 
               <div className="flex flex-wrap gap-4">
@@ -89,7 +91,14 @@ export default function HomeClient({ quality, pricing }: Props) {
             </div>
 
             <div className="flex justify-center animate-slide-up animation-delay-200">
-              <WaterScore score={score} size="lg" />
+              <div className="max-w-sm">
+                <WaterScore score={score} size="lg" />
+                <p className="mt-4 text-sm text-earth-600 text-center leading-relaxed">
+                  Skóre je vlastní orientační index VodaZlín.cz. Vychází z toho,
+                  jak daleko jsou vybrané parametry od hygienických limitů a
+                  obvyklých doporučených rozsahů; nenahrazuje oficiální rozbor.
+                </p>
+              </div>
             </div>
           </div>
         </section>
@@ -123,7 +132,7 @@ export default function HomeClient({ quality, pricing }: Props) {
                 </h2>
                 <p className="text-earth-700 mb-6">
                   Aktuální ceny vodného a stočného platné od{" "}
-                  {formatDate(pricing.lastUpdate)}
+                  {pricing.validFrom}
                 </p>
 
                 <div className="space-y-4">
@@ -212,6 +221,36 @@ export default function HomeClient({ quality, pricing }: Props) {
             >
               Prozkoumat mapu
             </Link>
+          </div>
+        </section>
+
+        <section className="container-custom py-16">
+          <div className="mb-10">
+            <h2 className="text-3xl md:text-4xl font-mono font-bold text-earth-900 mb-4">
+              Praktické informace o vodě ve Zlíně
+            </h2>
+            <p className="text-lg text-earth-700 max-w-3xl">
+              Čísla v přehledu doplňujeme vysvětlením, aby bylo jasné, co
+              znamenají pro běžné používání vody v domácnosti.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+            {[
+              ["Tvrdost vody ve Zlíně", "/tvrdost-vody-zlin", "Co znamená hodnota °dH a proč se liší podle zdroje."],
+              ["Vodní kámen", "/vodni-kamen", "Jak tvrdost souvisí s usazeninami a údržbou spotřebičů."],
+              ["Nastavení myčky", "/nastaveni-mycky", "Jak použít tvrdost vody při nastavení změkčovače."],
+              ["Dusičnany v pitné vodě", "/dusicnany-v-pitne-vode", "Jak číst hodnotu vůči hygienickému limitu."],
+              ["Je voda ve Zlíně pitná?", "/je-voda-ve-zline-pitna", "Srozumitelné shrnutí dostupných hodnot a jejich limitů."],
+              ["Jak se kontroluje pitná voda", "/jak-se-kontroluje-pitna-voda", "Proč záleží na místě odběru, datu a typu ukazatele."],
+              ["Zdroje vody ve Zlíně", "/zdroje-vody-zlin", "Odkud může voda pocházet a proč se lokality liší."],
+              ["Klečůvka vs. Tlumačov", "/klecuvka-vs-tlumacov", "Srovnání tvrdosti a charakteru vody u hlavních zdrojů."],
+            ].map(([title, href, text]) => (
+              <Link key={href} href={href} className="glass-card p-5 block hover:shadow-xl transition-all">
+                <h3 className="text-lg font-mono font-bold text-earth-900 mb-2">{title}</h3>
+                <p className="text-sm text-earth-700 leading-relaxed">{text}</p>
+              </Link>
+            ))}
           </div>
         </section>
       </main>

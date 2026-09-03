@@ -4,12 +4,17 @@
 
 export const dataMetadata = {
   lastUpdate: "2025-01-26",
+  waterQualityUpdatedAt: "2025-01-26T10:00:00Z",
+  pricesUpdatedAt: "2025-01-01",
+  siteDataUpdatedAt: "2025-01-26T10:00:00Z",
   sources: [
     { name: "Vodárna Zlín a.s.", url: "https://www.vodarnazlin.cz" },
     { name: "EuroClean - tvrdost vody", url: "https://euroclean.cz/problemy-vody/tvrda-voda/zlin/" },
     { name: "Pravda o vodě", url: "https://pravdaovode.cz/cena-vody-zlin/" },
   ],
   updateFrequency: "čtvrtletně",
+  pricingUpdateFrequency: "ročně podle zveřejněného ceníku",
+  hardnessUpdateFrequency: "podle dostupných veřejných podkladů",
 };
 
 export const currentWaterQuality = {
@@ -31,7 +36,7 @@ export const currentWaterQuality = {
     enterococci: 0, // KTJ/100ml
     coliformBacteria: 0, // KTJ/100ml
   },
-  score: 92, // Vypočítané skóre 0-100
+  score: 91, // Orientační index 0-100, přepočítává se z parametrů vody
   status: "excellent" as const,
 };
 

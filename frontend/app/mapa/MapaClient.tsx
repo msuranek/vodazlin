@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import dynamic from "next/dynamic";
+import Link from "next/link";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import {
@@ -15,7 +16,7 @@ import {
 } from "lucide-react";
 import { formatNumber } from "@/lib/utils";
 import { cn } from "@/lib/utils";
-import type { waterSources, zlínDistricts } from "@/lib/data";
+import type { dataMetadata, waterSources, zlínDistricts } from "@/lib/data";
 
 const ZlinMap = dynamic(() => import("@/components/ZlinMap"), {
   ssr: false,
@@ -32,9 +33,10 @@ const ZlinMap = dynamic(() => import("@/components/ZlinMap"), {
 interface Props {
   sources: typeof waterSources;
   districts: typeof zlínDistricts;
+  meta: typeof dataMetadata;
 }
 
-export default function MapaClient({ sources, districts }: Props) {
+export default function MapaClient({ sources, districts, meta }: Props) {
   const [selectedDistrict, setSelectedDistrict] = useState<string | null>(null);
   const [selectedSource, setSelectedSource] = useState<string | null>(null);
   const [expandedAreas, setExpandedAreas] = useState(false);
@@ -54,9 +56,36 @@ export default function MapaClient({ sources, districts }: Props) {
           <p className="text-lg text-earth-700">
             Vyberte městskou část nebo zdroj vody pro zobrazení detailních informací.
           </p>
+          <p className="text-sm text-earth-600 mt-3">
+            Poslední aktualizace podkladů k tvrdosti vody: {new Intl.DateTimeFormat("cs-CZ", {
+              day: "numeric",
+              month: "long",
+              year: "numeric",
+            }).format(new Date(meta.waterQualityUpdatedAt))}
+          </p>
         </section>
 
         <section className="container-custom py-8">
+          <div className="max-w-4xl mb-10">
+            <h2 className="text-2xl font-mono font-bold text-earth-900 mb-4">
+              Co mapa ukazuje
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-earth-700 leading-relaxed">
+              <p>
+                Mapa spojuje městské části se zdroji vody a orientační tvrdostí.
+                Slouží hlavně k rychlé orientaci, odkud může voda v dané části
+                Zlína pocházet a jaké hodnoty lze očekávat.
+              </p>
+              <p>
+                Základní informace jsou uvedené i mimo mapu, aby byly dostupné
+                bez interakce. Podrobnější vysvětlení tvrdosti najdete na stránce{" "}
+                <Link href="/tvrdost-vody-zlin/" className="text-water-700 underline underline-offset-4">
+                  tvrdost vody ve Zlíně
+                </Link>.
+              </p>
+            </div>
+          </div>
+
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div className="lg:col-span-2 space-y-6">
               <div>
@@ -328,6 +357,29 @@ export default function MapaClient({ sources, districts }: Props) {
                 <span className="text-sm text-earth-600">Velmi tvrdá (&gt;21 °dH)</span>
               </div>
             </div>
+          </div>
+        </section>
+
+        <section className="container-custom pb-16">
+          <h2 className="text-2xl font-mono font-bold text-earth-900 mb-6">
+            Přehled lokalit mimo mapu
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {districts.map((district) => {
+              const source = sources.find((item) => item.id === district.mainSource);
+              return (
+                <div key={district.id} className="glass-card p-5">
+                  <h3 className="text-lg font-mono font-bold text-earth-900 mb-2">
+                    {district.name}
+                  </h3>
+                  <p className="text-sm text-earth-700 leading-relaxed">
+                    Orientační tvrdost {district.hardness} °dH. Hlavní zdroj:
+                    {" "}{source?.name ?? "neuvedeno"}. Kvalita v přehledu:
+                    {" "}{district.quality}/100.
+                  </p>
+                </div>
+              );
+            })}
           </div>
         </section>
       </main>

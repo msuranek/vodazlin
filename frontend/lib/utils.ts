@@ -5,45 +5,68 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
-// Funkce pro výpočet kvality vody (0-100)
+// Orientační index kvality vody (0-100). Není to oficiální laboratorní ukazatel,
+// ale srozumitelný souhrn odvozený od vzdálenosti hodnot od limitů a obvyklých rozsahů.
 export function calculateWaterQuality(params: {
   hardness: number; // °dH
   pH: number;
   nitrates: number; // mg/l
   iron?: number; // mg/l
   manganese?: number; // mg/l
+}, bacteriological?: {
+  ecoli?: number;
+  enterococci?: number;
+  coliformBacteria?: number;
 }): number {
-  let score = 100;
+  let score = 96;
 
-  // Tvrdost (ideál 7-14 °dH)
+  // Tvrdost není hygienický problém sama o sobě, ale mimo obvyklý komfortní rozsah snižuje index.
   if (params.hardness < 7) {
-    score -= (7 - params.hardness) * 3;
+    score -= Math.min(12, (7 - params.hardness) * 2);
   } else if (params.hardness > 14) {
-    score -= (params.hardness - 14) * 2;
+    score -= Math.min(12, (params.hardness - 14) * 1.5);
   }
 
-  // pH (ideál 6.5-8.5)
+  // pH se hodnotí podle vzdálenosti od neutrální až slabě zásadité oblasti.
+  score -= Math.min(8, Math.abs(params.pH - 7.4) * 2);
   if (params.pH < 6.5) {
-    score -= (6.5 - params.pH) * 10;
+    score -= 20 + (6.5 - params.pH) * 10;
   } else if (params.pH > 8.5) {
-    score -= (params.pH - 8.5) * 10;
+    score -= 20 + (params.pH - 8.5) * 10;
   }
 
-  // Dusičnany (limit 50 mg/l, ideál < 25)
+  // Dusičnany mají hygienický limit 50 mg/l. Index klesá už podle přiblížení k limitu.
+  score -= Math.min(10, (params.nitrates / 50) * 6);
   if (params.nitrates > 50) {
     score -= 30;
   } else if (params.nitrates > 25) {
     score -= (params.nitrates - 25) * 0.8;
   }
 
-  // Železo (limit 0.2 mg/l)
-  if (params.iron && params.iron > 0.2) {
+  // Železo a mangan mají nízké limitní hodnoty; započítáváme i přiblížení k limitu.
+  if (typeof params.iron === "number") {
+    score -= Math.min(6, (params.iron / 0.2) * 3);
+  }
+  if (typeof params.iron === "number" && params.iron > 0.2) {
     score -= (params.iron - 0.2) * 50;
   }
 
-  // Mangan (limit 0.05 mg/l)
-  if (params.manganese && params.manganese > 0.05) {
+  if (typeof params.manganese === "number") {
+    score -= Math.min(6, (params.manganese / 0.05) * 3);
+  }
+  if (typeof params.manganese === "number" && params.manganese > 0.05) {
     score -= (params.manganese - 0.05) * 100;
+  }
+
+  if (bacteriological) {
+    const hasBacteria =
+      (bacteriological.ecoli ?? 0) > 0 ||
+      (bacteriological.enterococci ?? 0) > 0 ||
+      (bacteriological.coliformBacteria ?? 0) > 0;
+
+    if (hasBacteria) {
+      score -= 40;
+    }
   }
 
   return Math.max(0, Math.min(100, Math.round(score)));

@@ -63,6 +63,34 @@
   .data-card {
     @apply glass-card p-6 hover:shadow-xl transition-all duration-300;
   }
+
+  .article-content {
+    @apply text-earth-800;
+  }
+
+  .article-content h2 {
+    @apply text-2xl font-mono font-bold text-earth-900 mt-10 mb-4;
+  }
+
+  .article-content h3 {
+    @apply text-xl font-mono font-bold text-earth-900 mt-8 mb-3;
+  }
+
+  .article-content p {
+    @apply leading-relaxed mb-5;
+  }
+
+  .article-content ul {
+    @apply list-disc pl-6 space-y-2 mb-6;
+  }
+
+  .article-content a {
+    @apply text-water-700 hover:text-water-900 underline underline-offset-4;
+  }
+
+  .article-note {
+    @apply bg-water-50 border border-water-200 rounded-xl p-5 my-8 text-sm leading-relaxed;
+  }
 }
 
 @layer utilities {
