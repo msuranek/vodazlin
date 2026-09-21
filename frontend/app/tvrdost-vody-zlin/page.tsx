@@ -27,6 +27,13 @@ export default function TvrdostVodyPage() {
           Souhrnná hodnota pro centrální přehled je {formatNumber(quality.parameters.hardness)} °dH.
           Podle běžné klasifikace jde o středně tvrdou vodu.
         </p>
+        <p>
+          Pro domácnost je důležité hlavně to, že tato hodnota není varováním
+          před pitím vody. Tvrdost popisuje množství rozpuštěných minerálů,
+          především vápníku a hořčíku. V běžném životě se projeví spíš na
+          rychlovarné konvici, myčce, pračce, sprchové hlavici a dávkování
+          čisticích prostředků než na okamžité zdravotní bezpečnosti vody.
+        </p>
 
         <h2>Rozdíly podle zdroje</h2>
         <p>
@@ -42,12 +49,51 @@ export default function TvrdostVodyPage() {
             </li>
           ))}
         </ul>
+        <p>
+          Rozdíl několika stupňů německé tvrdosti už může být doma poznat.
+          V části napojené na měkčí vodu se vodní kámen obvykle tvoří pomaleji,
+          zatímco u tvrdší vody je vhodnější pečlivěji nastavit spotřebiče a
+          počítat s pravidelným odvápněním. Proto na webu neuvádíme jen jednu
+          hodnotu, ale propojujeme ji také s mapou a přehledem zdrojů.
+        </p>
 
         <h2>Co tvrdost ovlivňuje</h2>
         <p>
           Tvrdší voda může rychleji vytvářet vodní kámen v rychlovarné konvici,
           bojleru, pračce nebo myčce. U myčky je proto dobré nastavit změkčovač
           podle místní tvrdosti a pravidelně doplňovat sůl.
+        </p>
+        <p>
+          Prakticky se vyplatí sledovat tři místa. První je kuchyň: pokud se v
+          konvici rychle tvoří bílý povlak, jde typicky o srážení minerálů při
+          ohřevu. Druhé jsou spotřebiče s topným tělesem, kde usazeniny mohou
+          zhoršovat účinnost ohřevu. Třetí je koupelna, kde se tvrdost projeví na
+          bateriích, skle sprchového koutu a perlátorech.
+        </p>
+
+        <h2>Jak hodnotu použít v praxi</h2>
+        <p>
+          Pokud nastavujete myčku, hledejte v návodu tabulku tvrdosti vody.
+          Výrobci často používají stupně °dH, mmol/l nebo rozsahy jako měkká,
+          středně tvrdá a tvrdá voda. Pro Zlín dává smysl začít orientační
+          hodnotou z této stránky a u konkrétní lokality ji porovnat s mapou.
+        </p>
+        <p>
+          Jestli se po několika cyklech objevují bílé mapy na skle, může být
+          změkčovač nastavený nízko. Pokud je nádobí naopak kluzké nebo zůstává
+          výrazná chemická stopa, problém nemusí být tvrdost, ale dávkování
+          leštidla nebo mycího prostředku. Vždy je lepší měnit jednu věc po
+          druhé a několik mycích cyklů výsledek pozorovat.
+        </p>
+
+        <h2>Kdy má smysl vlastní měření</h2>
+        <p>
+          Web pracuje s veřejnými a orientačními daty pro město a jeho části.
+          Pokud řešíte drahý spotřebič, domácí úpravnu vody, akvárium nebo
+          zdravotně citlivou situaci, je přesnější použít test přímo u vás doma
+          nebo laboratorní rozbor. Hodnota z vodovodní sítě se může na konkrétním
+          kohoutku lišit podle vnitřních rozvodů, stáří instalace a provozu v
+          domě.
         </p>
         <p>
           Další praktické návody najdete na stránkách{" "}

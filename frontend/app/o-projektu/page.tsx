@@ -33,6 +33,12 @@ export default function OProjektuPage() {
           Pro závazné informace je vždy potřeba vycházet z dokumentů provozovatele
           vodovodu, hygienické stanice nebo z vlastního laboratorního rozboru.
         </p>
+        <p>
+          Přidaná hodnota webu je v interpretaci. Veřejná čísla sama o sobě často
+          neřeknou, jestli má člověk upravit nastavení myčky, proč se tvoří vodní
+          kámen nebo proč se tvrdost může lišit podle části města. VodaZlín.cz
+          proto spojuje datový přehled, mapu a praktické texty pro domácnosti.
+        </p>
 
         <h2>Odkud pocházejí data</h2>
         <p>
@@ -46,6 +52,12 @@ export default function OProjektuPage() {
           datový základ webu. Slouží k vysvětlení jednotlivých ukazatelů a jejich
           vztahu k limitům, ale nejsou při každém měsíčním běhu scraperu nově
           stahované z laboratorních protokolů.
+        </p>
+        <p>
+          U takových hodnot proto používáme opatrnou formulaci: nejde o živý
+          laboratorní monitoring. Pokud je údaj určený hlavně k vysvětlení
+          významu parametru, stránka to má říkat otevřeně. Pokud je údaj načtený
+          automaticky, uvádíme datum aktualizace datového snapshotu.
         </p>
         <h3>Automaticky aktualizujeme</h3>
         <ul>
@@ -80,6 +92,12 @@ export default function OProjektuPage() {
           podle ceníku, zatímco parametry kvality se vyhodnocují podle dostupných
           měření a podkladů.
         </p>
+        <p>
+          Měsíční build webu neznamená, že se každý měsíc změní všechny hodnoty.
+          Některé veřejné podklady se mění ročně, jiné nepravidelně. Statický web
+          proto ukazuje poslední známý datový stav a neslibuje real-time dohled
+          nad vodovodní sítí.
+        </p>
 
         <h2>Jak vzniká orientační index</h2>
         <p>
@@ -92,6 +110,13 @@ export default function OProjektuPage() {
           mikrobiologické ukazatele. Tvrdost sama o sobě neznamená, že voda je
           zdravotně nevyhovující, ale ovlivňuje komfort v domácnosti, tvorbu
           vodního kamene a nastavení spotřebičů.
+        </p>
+        <p>
+          Index záměrně nezačíná na 100 bodech a nemá vytvářet dojem úředního
+          razítka. Je to zkratka pro rychlé porovnání vybraných parametrů. Pokud
+          některý parametr leží blíže limitu nebo mimo obvyklý komfortní rozsah,
+          index klesá. Pro detailní pochopení je ale vždy důležitější číst
+          jednotlivé hodnoty než samotné skóre.
         </p>
         <div className="article-note">
           Index je pomůcka pro rychlou orientaci. Není to úřední hodnocení vody

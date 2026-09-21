@@ -49,6 +49,25 @@ export default function KlecuvkaVsTlumacovPage() {
           z těchto charakteristik ale sama o sobě neříká, že voda je nebo není
           pitná.
         </p>
+        <p>
+          Prakticky to znamená, že domácnost napojená na tvrdší vodu bude častěji
+          řešit odvápnění konvice, čištění sprchové hlavice a správné dávkování
+          soli v myčce. U měkčí až středně tvrdé vody bývá údržba jednodušší, ale
+          pořád záleží na spotřebě, teplotě ohřevu a stavu vnitřních rozvodů.
+        </p>
+
+        <h2>Proč nestačí jeden průměr pro celý Zlín</h2>
+        <p>
+          Jedno městské číslo je dobré pro rychlý přehled, ale může zakrýt
+          rozdíly mezi částmi sítě. Průměrná tvrdost pomůže návštěvníkovi
+          pochopit základní charakter vody, zatímco srovnání zdrojů vysvětluje,
+          proč sousední lokalita nemusí mít úplně stejný výsledek.
+        </p>
+        <p>
+          Proto web pracuje se dvěma úrovněmi: souhrnný index a parametry na
+          stránce kvality ukazují celkový obraz, zatímco mapa a zdrojové stránky
+          pomáhají s praktickým použitím podle místa.
+        </p>
 
         <h2>Proč hodnoty bereme orientačně</h2>
         <p>
@@ -56,6 +75,21 @@ export default function KlecuvkaVsTlumacovPage() {
           všechny hodnoty. Pokud některý zdroj v aktuálním PDF chybí, web ponechá
           předchozí nebo fallback hodnotu a v metodice vysvětluje, co je
           automaticky aktualizované.
+        </p>
+        <p>
+          To je důležité říct otevřeně: tato stránka není laboratorní protokol.
+          Je to srozumitelná interpretace dostupných hodnot pro běžného
+          návštěvníka. Přidaná hodnota webu je ve spojení čísel, mapy, vysvětlení
+          a domácích dopadů, ne v tom, že by nahrazoval provozovatele vodovodu.
+        </p>
+
+        <h2>Kdy se dívat na mapu</h2>
+        <p>
+          Pokud chcete nastavit myčku nebo řešíte vodní kámen, začněte u lokality
+          v mapě. Pokud vás zajímá obecné srovnání zdrojů, zůstaňte na této
+          stránce. Pokud řešíte aktuální havárii, zákal nebo výluku, použijte
+          oficiální informace provozovatele, protože mapa neukazuje mimořádné
+          provozní stavy.
         </p>
         <p>
           Více k práci s daty je na stránce{" "}

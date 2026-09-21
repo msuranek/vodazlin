@@ -35,6 +35,13 @@ export default function ZdrojeVodyPage() {
             </li>
           ))}
         </ul>
+        <p>
+          Přehled zdrojů není úřední schéma provozu vodovodní sítě. Je to
+          zjednodušený model pro návštěvníky webu, který pomáhá pochopit, proč
+          se voda v různých částech Zlína může chovat trochu jinak. Nejlépe
+          funguje pro praktické otázky typu tvrdost vody, vodní kámen nebo
+          nastavení spotřebičů.
+        </p>
 
         <h2>Proč záleží na lokalitě</h2>
         <p>
@@ -43,6 +50,13 @@ export default function ZdrojeVodyPage() {
           konkrétní části Zlína. Proto je mapa užitečná hlavně jako orientační
           pomůcka, ne jako laboratorní výsledek pro konkrétní kohoutek.
         </p>
+        <p>
+          Lokální rozdíl nemusí být dramatický, ale pro domácnost může být
+          poznatelný. Pokud se přestěhujete z jedné části města do jiné, může se
+          změnit rychlost tvorby vodního kamene nebo ideální nastavení myčky.
+          Naopak chuť vody může ovlivnit i domovní instalace, délka stání vody v
+          potrubí nebo stav perlátorů.
+        </p>
 
         <h2>Co se může měnit</h2>
         <p>
@@ -50,6 +64,21 @@ export default function ZdrojeVodyPage() {
           vodním kameni, nastavení myčky nebo pocitu při mytí. Zdravotní
           bezpečnost pitné vody se ale posuzuje podle širšího souboru ukazatelů,
           nejen podle tvrdosti.
+        </p>
+        <p>
+          V provozu vodovodu mohou nastat situace, kdy se zdroje dočasně míchají
+          jinak než obvykle nebo se část sítě zásobuje odlišně. Běžný návštěvník
+          to většinou pozná jen podle chuti, zákalu po opravě nebo jiné rychlosti
+          tvorby usazenin. Pro závazné informace je proto nutné sledovat
+          oznámení provozovatele.
+        </p>
+
+        <h2>Jak tento přehled používat</h2>
+        <p>
+          Pokud řešíte běžnou domácnost, začněte mapou a tvrdostí vody. Pokud
+          řešíte zdravotní bezpečnost, hledejte oficiální rozbory a aktuální
+          oznámení. Pokud řešíte vlastní studnu, tento přehled veřejného vodovodu
+          nestačí a je potřeba rozbor konkrétního zdroje.
         </p>
         <p>
           Srovnání dvou zdrojů najdete na stránce{" "}

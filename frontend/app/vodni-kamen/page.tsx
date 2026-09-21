@@ -31,6 +31,12 @@ export default function VodniKamenPage() {
           Orientační tvrdost v centrálním přehledu je {formatNumber(quality.parameters.hardness)} °dH.
           To odpovídá vodě, u které má smysl počítat s běžnou údržbou spotřebičů.
         </p>
+        <p>
+          Typickým místem, kde si vodního kamene všimnete nejdřív, je rychlovarná
+          konvice. Bílý povlak na dně není nečistota z potrubí, ale minerální
+          usazenina. Stejný princip probíhá v myčce, pračce, bojleru nebo na
+          sprchové hlavici, jen ho tam není vždy vidět hned.
+        </p>
 
         <h2>Co pomáhá v domácnosti</h2>
         <ul>
@@ -39,12 +45,45 @@ export default function VodniKamenPage() {
           <li>odstraňovat usazeniny z konvice a sprchové hlavice,</li>
           <li>u bojleru sledovat doporučený servisní interval.</li>
         </ul>
+        <p>
+          U vody s hodnotou kolem zlínského orientačního průměru obvykle není
+          nutné dělat radikální opatření pro celou domácnost. Většině lidí
+          pomůže správné nastavení myčky, pravidelné čištění perlátorů a rozumné
+          odvápnění spotřebičů podle toho, jak často se používají. Důležité je
+          neplést si vodní kámen se zdravotní závadností vody.
+        </p>
+
+        <h2>Jak často čistit spotřebiče</h2>
+        <p>
+          Univerzální interval neexistuje, protože záleží na spotřebě vody a
+          teplotě ohřevu. Konvici má smysl vyčistit ve chvíli, kdy je usazenina
+          zřetelná na dně nebo se odlupuje. U myčky je lepší vycházet z návodu
+          výrobce, nastavení tvrdosti a signálu pro doplnění soli. U bojleru je
+          rozumné držet se servisního intervalu, protože usazeniny nejsou vidět
+          a mohou ovlivnit účinnost ohřevu.
+        </p>
+
+        <h2>Co nedělat zbytečně</h2>
+        <p>
+          Není nutné automaticky kupovat domácí změkčovač jen proto, že se v
+          konvici tvoří povlak. Centrální změkčování vody mění minerální složení
+          vody v celé domácnosti, vyžaduje údržbu a nemusí být přiměřené běžnému
+          problému. Dává větší smysl tam, kde tvrdost dlouhodobě zkracuje
+          životnost zařízení nebo komplikuje provoz celé instalace.
+        </p>
 
         <h2>Kdy řešit změkčovač</h2>
         <p>
           Domácí změkčovač dává smysl hlavně tam, kde tvrdost dlouhodobě působí
           potíže spotřebičům nebo rozvodům. Pro pití není samotná střední tvrdost
           obvykle důvodem vodu odmítat.
+        </p>
+        <p>
+          Před pořízením změkčovače je dobré znát tvrdost přímo v místě odběru,
+          odhad spotřeby vody a náklady na provoz zařízení. U bytů často stačí
+          řešit jen konkrétní spotřebiče. U rodinných domů s bojlerem, delšími
+          rozvody a vyšší spotřebou už může dávat ekonomické srovnání větší
+          smysl.
         </p>
         <p>
           Pro konkrétní nastavení spotřebičů pokračujte na{" "}

@@ -11,14 +11,6 @@ const adAllowedPaths = new Set([
   "/ceny/",
   "/mapa/",
   "/o-projektu/",
-  "/tvrdost-vody-zlin/",
-  "/vodni-kamen/",
-  "/nastaveni-mycky/",
-  "/dusicnany-v-pitne-vode/",
-  "/je-voda-ve-zline-pitna/",
-  "/jak-se-kontroluje-pitna-voda/",
-  "/zdroje-vody-zlin/",
-  "/klecuvka-vs-tlumacov/",
 ]);
 
 export default function AdSenseScript() {
