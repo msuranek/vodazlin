@@ -37,6 +37,17 @@ cd frontend
 docker compose up --build
 ```
 
+## Testy
+
+Unit testy ověřují výpočet orientačního indexu kvality vody, reakci na
+bakteriologický nález a hraniční hodnoty popisků a barev:
+
+```bash
+cd frontend
+npm ci
+npm test
+```
+
 ## Struktura
 
 ```
@@ -65,7 +76,13 @@ npm run update-data
 ```
 
 Skript stáhne aktuální ceny a tvrdost vody z PDF a uloží JSON soubory do `frontend/data/`.
-GitHub Actions workflow `.github/workflows/static-dist.yml` ho spouští při pushi do `main`, ručně přes `workflow_dispatch` a automaticky 1. den v měsíci. Potom vygeneruje čistě statický web do větve `dist`.
+GitHub Actions workflow `.github/workflows/static-dist.yml` ho spouští při pushi do `master` nebo `main`, ručně přes `workflow_dispatch` a automaticky 1. den v měsíci. Potom vygeneruje čistě statický web do větve `dist`.
+
+## Větve repozitáře
+
+- `master` je aktuální výchozí větev se zdrojovým kódem.
+- Workflow přijímá také `main`, aby publikování fungovalo i po případném budoucím přejmenování výchozí větve.
+- `dist` je automaticky generovaná větev se statickým webem. Neupravuje se ručně; každý úspěšný build její obsah nahradí.
 
 ## Datové zdroje
 
@@ -73,4 +90,4 @@ GitHub Actions workflow `.github/workflows/static-dist.yml` ho spouští při pu
 
 ## Licence
 
-MIT
+[MIT](LICENSE)
