@@ -1,7 +1,6 @@
 # VodaZlín.cz
 
-[![Tests](https://github.com/msuranek/vodazlin/actions/workflows/tests.yml/badge.svg?branch=master)](https://github.com/msuranek/vodazlin/actions/workflows/tests.yml)
-[![Static build](https://github.com/msuranek/vodazlin/actions/workflows/static-dist.yml/badge.svg?branch=master)](https://github.com/msuranek/vodazlin/actions/workflows/static-dist.yml)
+[![CI and deploy](https://github.com/msuranek/vodazlin/actions/workflows/static-dist.yml/badge.svg?branch=master)](https://github.com/msuranek/vodazlin/actions/workflows/static-dist.yml)
 [![vodazlin.cz](https://img.shields.io/website?url=https%3A%2F%2Fvodazlin.cz&label=vodazlin.cz)](https://vodazlin.cz)
 
 Přehled kvality, tvrdosti a ceny pitné vody ve Zlíně postavený nad veřejně dostupnými daty.
