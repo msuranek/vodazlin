@@ -1,8 +1,7 @@
-import assert from 'node:assert/strict'
 import fs from 'node:fs'
 import path from 'node:path'
-import test from 'node:test'
 import { fileURLToPath } from 'node:url'
+import { expect, test } from 'vitest'
 import {
   calculateWaterQuality,
   normalizeHardness,
@@ -15,7 +14,7 @@ const fixturesDir = path.join(path.dirname(fileURLToPath(import.meta.url)), 'fix
 test('parsePricingHtml extracts prices from a saved HTML fixture', () => {
   const html = fs.readFileSync(path.join(fixturesDir, 'pricing.html'), 'utf8')
 
-  assert.deepEqual(parsePricingHtml(html), {
+  expect(parsePricingHtml(html)).toEqual({
     waterPrice: 63.59,
     waterPriceWithVat: 71.22,
     sewagePrice: 59.46,
@@ -24,19 +23,19 @@ test('parsePricingHtml extracts prices from a saved HTML fixture', () => {
 })
 
 test('parsePricingHtml rejects incomplete source HTML', () => {
-  assert.throws(() => parsePricingHtml('<p>Vodné 63,59 71,22</p>'), /Nelze parsovat ceny/)
+  expect(() => parsePricingHtml('<p>Vodné 63,59 71,22</p>')).toThrow(/Nelze parsovat ceny/)
 })
 
 test('parsePricingHtml rejects implausible prices', () => {
   const html = '<p>Vodné 12,00 13,44</p><p>Stočné 59,46 66,60</p>'
 
-  assert.throws(() => parsePricingHtml(html), /Ceny mimo rozsah/)
+  expect(() => parsePricingHtml(html)).toThrow(/Ceny mimo rozsah/)
 })
 
 test('parseHardnessText extracts both plants from saved PDF text', () => {
   const text = fs.readFileSync(path.join(fixturesDir, 'hardness-report.txt'), 'utf8')
 
-  assert.deepEqual(parseHardnessText(text), {
+  expect(parseHardnessText(text)).toEqual({
     klecuvka: 1.62,
     tlumacov: 12.6,
     rawText: text,
@@ -44,12 +43,12 @@ test('parseHardnessText extracts both plants from saved PDF text', () => {
 })
 
 test('parseHardnessText returns null for a missing plant', () => {
-  assert.equal(parseHardnessText('Úpravna vody Klečůvka 1.70 mmol/l').tlumacov, null)
+  expect(parseHardnessText('Úpravna vody Klečůvka 1.70 mmol/l').tlumacov).toBeNull()
 })
 
 test('normalizeHardness handles mmol/l and °dH values', () => {
-  assert.deepEqual(normalizeHardness(1.62), { hardness: 9.08, hardnessMmol: 1.62 })
-  assert.deepEqual(normalizeHardness(12.6), { hardness: 12.6, hardnessMmol: 2.25 })
+  expect(normalizeHardness(1.62)).toEqual({ hardness: 9.08, hardnessMmol: 1.62 })
+  expect(normalizeHardness(12.6)).toEqual({ hardness: 12.6, hardnessMmol: 2.25 })
 })
 
 test('calculateWaterQuality penalizes bacteriological contamination', () => {
@@ -57,5 +56,5 @@ test('calculateWaterQuality penalizes bacteriological contamination', () => {
   const cleanScore = calculateWaterQuality(parameters, { ecoli: 0 })
   const contaminatedScore = calculateWaterQuality(parameters, { ecoli: 1 })
 
-  assert.equal(cleanScore - contaminatedScore, 40)
+  expect(cleanScore - contaminatedScore).toBe(40)
 })
