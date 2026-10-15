@@ -1,5 +1,5 @@
 // Data o kvalitě vody ve Zlíně
-// Zdroje: vodarnazlin.cz, euroclean.cz, pravdaovode.cz
+// Zdroj: vodarnazlin.cz
 // Poslední aktualizace: leden 2025
 
 export const dataMetadata = {
@@ -9,8 +9,6 @@ export const dataMetadata = {
   siteDataUpdatedAt: "2025-01-26T10:00:00Z",
   sources: [
     { name: "Vodárna Zlín a.s.", url: "https://www.vodarnazlin.cz" },
-    { name: "EuroClean - tvrdost vody", url: "https://euroclean.cz/problemy-vody/tvrda-voda/zlin/" },
-    { name: "Pravda o vodě", url: "https://pravdaovode.cz/cena-vody-zlin/" },
   ],
   updateFrequency: "čtvrtletně",
   pricingUpdateFrequency: "ročně podle zveřejněného ceníku",
