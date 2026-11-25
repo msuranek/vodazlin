@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import MapaClient from "./MapaClient";
-import { getDataMetadata, getWaterSources, zlínDistricts } from "@/lib/server-data";
+import { getDataMetadata, getDistricts, getQualityDocuments, getWaterSources } from "@/lib/server-data";
 
 export const metadata: Metadata = {
   title: "Mapa tvrdosti vody ve Zlíně | VodaZlín.cz",
@@ -10,5 +10,6 @@ export const metadata: Metadata = {
 export default async function MapaPage() {
   const sources = getWaterSources();
   const meta = getDataMetadata();
-  return <MapaClient sources={sources} districts={zlínDistricts} meta={meta} />;
+  const documents = getQualityDocuments();
+  return <MapaClient sources={sources} districts={getDistricts()} documents={documents} meta={meta} />;
 }

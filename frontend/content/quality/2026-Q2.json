@@ -1,0 +1,153 @@
+{
+  "period": "2026-Q2",
+  "year": 2026,
+  "quarter": 2,
+  "title": "Kvalita pitné vody na Zlínsku Q2 2026",
+  "sourceUrl": "https://www.vodarnazlin.cz/res/archive/003/001731.pdf?seek=1783068141",
+  "sourcePage": "https://www.vodarnazlin.cz/o-nas/pitna-voda/kvalita-pitne-vody-na-zlinsku/",
+  "limits": {
+    "nitrates": {
+      "raw": "50",
+      "type": "NMH",
+      "max": 50
+    },
+    "coliformBacteria": {
+      "raw": "0",
+      "type": "MH",
+      "max": 0
+    },
+    "enterococci": {
+      "raw": "0",
+      "type": "NMH",
+      "max": 0
+    },
+    "ecoli": {
+      "raw": "0",
+      "type": "NMH",
+      "max": 0
+    },
+    "iron": {
+      "raw": "0,20",
+      "type": "MH",
+      "max": 0.2
+    },
+    "manganese": {
+      "raw": "0,05",
+      "type": "MH",
+      "max": 0.05
+    },
+    "hardness": {
+      "raw": "2 - 3,5",
+      "type": "DH",
+      "min": 2,
+      "max": 3.5
+    },
+    "calcium": {
+      "raw": "40-80",
+      "type": "DH",
+      "min": 40,
+      "max": 80
+    },
+    "magnesium": {
+      "raw": "20-30",
+      "type": "DH",
+      "min": 20,
+      "max": 30
+    },
+    "pH": {
+      "raw": "6,5-9,5",
+      "type": "MH",
+      "min": 6.5,
+      "max": 9.5
+    }
+  },
+  "plants": {
+    "tlumacov": {
+      "nitrates": {
+        "raw": "5,4",
+        "value": 5.4
+      },
+      "coliformBacteria": {
+        "raw": "0",
+        "value": 0
+      },
+      "enterococci": {
+        "raw": "0",
+        "value": 0
+      },
+      "ecoli": {
+        "raw": "0",
+        "value": 0
+      },
+      "iron": {
+        "raw": "0,05",
+        "value": 0.05
+      },
+      "manganese": {
+        "raw": "<0,02",
+        "value": null,
+        "lessThan": 0.02
+      },
+      "hardness": {
+        "raw": "2,50",
+        "value": 2.5
+      },
+      "calcium": {
+        "raw": "72,7",
+        "value": 72.7
+      },
+      "magnesium": {
+        "raw": "15,9",
+        "value": 15.9
+      },
+      "pH": {
+        "raw": "7,49",
+        "value": 7.49
+      }
+    },
+    "klecuvka": {
+      "nitrates": {
+        "raw": "5,1",
+        "value": 5.1
+      },
+      "coliformBacteria": {
+        "raw": "0",
+        "value": 0
+      },
+      "enterococci": {
+        "raw": "0",
+        "value": 0
+      },
+      "ecoli": {
+        "raw": "0",
+        "value": 0
+      },
+      "iron": {
+        "raw": "0,04",
+        "value": 0.04
+      },
+      "manganese": {
+        "raw": "<0,02",
+        "value": null,
+        "lessThan": 0.02
+      },
+      "hardness": {
+        "raw": "1,78",
+        "value": 1.78
+      },
+      "calcium": {
+        "raw": "52,4",
+        "value": 52.4
+      },
+      "magnesium": {
+        "raw": "10,6",
+        "value": 10.6
+      },
+      "pH": {
+        "raw": "8,00",
+        "value": 8
+      }
+    }
+  },
+  "updatedAt": "2026-11-16T22:07:36.773Z"
+}

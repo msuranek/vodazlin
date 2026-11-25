@@ -1,254 +1,174 @@
-import fs from 'node:fs'
+// Stáhne veřejná data Vodárny Zlín a uloží je do frontend/content/*.json.
+// Každý zdroj se zpracuje samostatně; soubor se přepíše jen tehdy, když prošel
+// validací a jeho obsah se opravdu změnil (pak dostane nové `updatedAt`).
+// Při chybě skript skončí s kódem 1 a chybný zdroj nechá beze změny.
+
 import path from 'node:path'
 import process from 'node:process'
-import pdfParse from 'pdf-parse'
 import {
-  calculateWaterQuality,
-  normalizeHardness,
-  parseHardnessText,
+  BASE_URL,
+  parseMunicipalityHardnessText,
   parsePricingHtml,
+  parseQualityPage,
+  parseQualityReportText,
+  parseSupplyAreasHtml,
+  parseTvrdostPage,
+  validateQualityReport,
 } from './data-parsers.mjs'
+import { createContentStore } from './content-store.mjs'
+import { extractPdfItemsText, extractPdfText } from './pdf-text.mjs'
 
-const DATA_DIR = path.join(process.cwd(), 'data')
-const year = process.env.VODAZLIN_PRICE_YEAR || String(new Date().getFullYear())
+const CONTENT_DIR = process.env.VODAZLIN_CONTENT_DIR || path.join(process.cwd(), 'content')
+const USER_AGENT = 'Mozilla/5.0 (compatible; VodaZlin/1.0)'
 
-const DEFAULT_WATER_QUALITY = {
-  timestamp: '2025-01-26T10:00:00Z',
-  location: 'Zlín - centrální rozvod',
-  parameters: {
-    hardness: 10.8,
-    pH: 7.4,
-    nitrates: 18.5,
-    iron: 0.08,
-    manganese: 0.02,
-    calcium: 64.5,
-    magnesium: 18.3,
-    chlorides: 12.8,
-    sulfates: 28.4,
-  },
-  bacteriological: {
-    ecoli: 0,
-    enterococci: 0,
-    coliformBacteria: 0,
-  },
-  score: 91,
-  status: 'excellent',
+const PAGES = {
+  quality: `${BASE_URL}/o-nas/pitna-voda/kvalita-pitne-vody-na-zlinsku/`,
+  hardness: `${BASE_URL}/o-nas/pitna-voda/tvrdost-vody/`,
+  supplyAreas: `${BASE_URL}/o-nas/provozovane-vodovody/`,
+  pricing: (year) => `${BASE_URL}/zakaznici/cena-vody/cena-vodneho-a-stocneho-${year}/`,
 }
 
-const DEFAULT_WATER_SOURCES = [
-  {
-    id: 'klecuvka',
-    name: 'ÚV Klečůvka',
-    location: { lat: 49.2456, lng: 17.7234 },
-    hardness: 9.0,
-    hardnessMmol: 1.62,
-    servesAreas: [
-      'Východní část Zlína',
-      'Štípa',
-      'Kostelec',
-      'Fryšták',
-      'Želechovice nad Dřevnicí',
-      'Lípa nad Dřevnicí',
-      'Březová u Zlína',
-      'Lukov',
-      'Zádveřice',
-      'Velíková',
-      'Ostrata',
-      'Hrobice',
-      'Veselá',
-      'Lužkovice',
-      'Lukoveček',
-    ],
-    quality: 93,
-    waterType: 'měkká až středně tvrdá',
-  },
-  {
-    id: 'tlumacov',
-    name: 'ÚV Tlumačov',
-    location: { lat: 49.2678, lng: 17.4987 },
-    hardness: 12.6,
-    hardnessMmol: 2.26,
-    servesAreas: [
-      'Západní část Zlína',
-      'Jaroslavice',
-      'Racková',
-      'Březnice u Zlína',
-      'Otrokovice',
-      'Napajedla',
-      'Machová',
-      'Mysločovice',
-      'Hostišová',
-      'Sazovice',
-      'Tlumačov',
-      'Halenkovice',
-      'Žlutava',
-      'Spytihněv',
-      'Lhota u Malenovic',
-      'Salaš u Zlína',
-      'Tečovice',
-      'Bohuslavice u Zlína',
-    ],
-    quality: 92,
-    waterType: 'středně tvrdá',
-  },
-]
-
-const DEFAULT_METADATA = {
-  lastUpdate: '2025-01-26',
-  waterQualityUpdatedAt: '2025-01-26T10:00:00Z',
-  pricesUpdatedAt: '2025-01-01',
-  siteDataUpdatedAt: '2025-01-26T10:00:00Z',
-  sources: [
-    { name: 'Vodárna Zlín a.s.', url: 'https://www.vodarnazlin.cz' },
-  ],
-  updateFrequency: 'čtvrtletně',
-  pricingUpdateFrequency: 'ročně podle zveřejněného ceníku',
-  hardnessUpdateFrequency: 'podle dostupných veřejných podkladů',
-}
-
-function ensureDir() {
-  fs.mkdirSync(DATA_DIR, { recursive: true })
-}
-
-function readJson(filename, fallback) {
-  try {
-    const filePath = path.join(DATA_DIR, filename)
-    if (!fs.existsSync(filePath)) return fallback
-    return JSON.parse(fs.readFileSync(filePath, 'utf-8'))
-  } catch {
-    return fallback
+class HttpError extends Error {
+  constructor(status, url) {
+    super(`HTTP ${status} pro ${url}`)
+    this.status = status
   }
 }
 
-function writeJson(filename, data) {
-  fs.writeFileSync(path.join(DATA_DIR, filename), `${JSON.stringify(data, null, 2)}\n`)
+async function fetchResponse(url) {
+  const res = await fetch(url, {
+    headers: { 'User-Agent': USER_AGENT },
+    signal: AbortSignal.timeout(30_000),
+  })
+  if (!res.ok) throw new HttpError(res.status, url)
+  return res
 }
 
-async function scrapePricing() {
-  const url = `https://www.vodarnazlin.cz/zakaznici/cena-vody/cena-vodneho-a-stocneho-${year}/`
-  const res = await fetch(url, {
-    headers: { 'User-Agent': 'Mozilla/5.0 (compatible; VodaZlin/1.0)' },
-    cache: 'no-store',
-  })
+const fetchText = async (url) => (await fetchResponse(url)).text()
+const fetchBuffer = async (url) => Buffer.from(await (await fetchResponse(url)).arrayBuffer())
 
-  if (!res.ok) throw new Error(`HTTP ${res.status} pro ceník ${url}`)
+const store = createContentStore(CONTENT_DIR, { transactional: true })
+const readJson = store.read
+const writeIfChanged = store.writeIfChanged
 
-  const html = await res.text()
-  const { waterPrice, waterPriceWithVat, sewagePrice, sewagePriceWithVat } = parsePricingHtml(html)
+async function updateQuality(log) {
+  const { reports, documents } = parseQualityPage(await fetchText(PAGES.quality))
 
-  return {
-    lastUpdate: new Date().toISOString().split('T')[0],
-    validFrom: `1. ledna ${year}`,
+  if (writeIfChanged('documents.json', { sourcePage: PAGES.quality, documents })) {
+    log.push('documents.json: aktualizováno')
+  }
+
+  for (const report of reports) {
+    const relativePath = `quality/${report.period}.json`
+    const existing = readJson(relativePath)
+    if (existing?.sourceUrl === report.url) continue
+
+    const text = await extractPdfItemsText(await fetchBuffer(report.url))
+    const parsed = validateQualityReport(parseQualityReportText(text))
+
+    writeIfChanged(relativePath, {
+      period: report.period,
+      year: report.year,
+      quarter: report.quarter,
+      title: report.title,
+      sourceUrl: report.url,
+      sourcePage: PAGES.quality,
+      limits: parsed.limits,
+      plants: parsed.plants,
+    })
+    log.push(`${relativePath}: ${existing ? 'aktualizováno' : 'nový report'}`)
+  }
+}
+
+async function updateMunicipalityHardness(log) {
+  const link = parseTvrdostPage(await fetchText(PAGES.hardness))
+  const existing = readJson('hardness-by-municipality.json')
+  if (existing?.sourceUrl === link.url) return
+
+  const { text, title } = await extractPdfText(await fetchBuffer(link.url))
+  const parsed = parseMunicipalityHardnessText(text, title)
+
+  if (writeIfChanged('hardness-by-municipality.json', {
+    year: parsed.year,
+    sourceUrl: link.url,
+    sourcePage: PAGES.hardness,
+    municipalities: parsed.municipalities,
+  })) {
+    log.push('hardness-by-municipality.json: aktualizováno')
+  }
+}
+
+async function updateSupplyAreas(log) {
+  const plants = parseSupplyAreasHtml(await fetchText(PAGES.supplyAreas))
+  if (writeIfChanged('supply-areas.json', { sourcePage: PAGES.supplyAreas, plants })) {
+    log.push('supply-areas.json: aktualizováno')
+  }
+}
+
+async function updatePricing(log) {
+  const year = Number(process.env.VODAZLIN_PRICE_YEAR || new Date().getFullYear())
+  const url = PAGES.pricing(year)
+
+  let html
+  try {
+    html = await fetchText(url)
+  } catch (error) {
+    // Ceník na nový rok bývá zveřejněn až koncem roku; do té doby platí ten poslední.
+    if (error instanceof HttpError && error.status === 404 && readJson(`pricing/${year - 1}.json`)) {
+      log.push(`pricing: ceník ${year} zatím není zveřejněn`)
+      return
+    }
+    throw error
+  }
+
+  const parsed = parsePricingHtml(html)
+  const roundPrice = (value) => Math.round(value * 100) / 100
+
+  if (writeIfChanged(`pricing/${year}.json`, {
+    year,
+    validFrom: parsed.validFrom ?? `${year}-01-01`,
     prices: {
-      water: { price: waterPrice, vat: 12, priceWithVat: waterPriceWithVat },
-      sewage: { price: sewagePrice, vat: 12, priceWithVat: sewagePriceWithVat },
+      water: { price: parsed.waterPrice, vat: parsed.vat, priceWithVat: parsed.waterPriceWithVat },
+      sewage: { price: parsed.sewagePrice, vat: parsed.vat, priceWithVat: parsed.sewagePriceWithVat },
       total: {
-        price: Math.round((waterPrice + sewagePrice) * 100) / 100,
-        priceWithVat: Math.round((waterPriceWithVat + sewagePriceWithVat) * 100) / 100,
+        price: roundPrice(parsed.waterPrice + parsed.sewagePrice),
+        priceWithVat: roundPrice(parsed.waterPriceWithVat + parsed.sewagePriceWithVat),
       },
     },
-    averageConsumption: { person: 95, household2: 58, household4: 116 },
-    source: url,
+    sourceUrl: url,
+  })) {
+    log.push(`pricing/${year}.json: aktualizováno`)
   }
-}
-
-async function scrapeWaterHardness() {
-  const pdfUrl = process.env.VODAZLIN_HARDNESS_PDF_URL || 'https://www.vodarnazlin.cz/res/archive/002/001585.pdf?seek=1734076813'
-  const res = await fetch(pdfUrl, {
-    headers: { 'User-Agent': 'Mozilla/5.0 (compatible; VodaZlin/1.0)' },
-    cache: 'no-store',
-  })
-
-  if (!res.ok) throw new Error(`HTTP ${res.status} pro PDF ${pdfUrl}`)
-
-  const buffer = Buffer.from(await res.arrayBuffer())
-  const data = await pdfParse(buffer)
-  return parseHardnessText(data.text)
 }
 
 async function main() {
-  const results = {}
+  const steps = {
+    quality: updateQuality,
+    municipalityHardness: updateMunicipalityHardness,
+    supplyAreas: updateSupplyAreas,
+    pricing: updatePricing,
+  }
+  const log = []
   const errors = []
-  const metadata = readJson('metadata.json', DEFAULT_METADATA)
-  const now = new Date().toISOString()
 
-  ensureDir()
-  metadata.sources = DEFAULT_METADATA.sources
-
-  try {
-    const pricing = await scrapePricing()
-    writeJson('pricing.json', pricing)
-    metadata.pricesUpdatedAt = pricing.lastUpdate
-    results.pricing = { updated: true, data: pricing }
-  } catch (error) {
-    const message = error instanceof Error ? error.message : String(error)
-    errors.push(`pricing: ${message}`)
-    results.pricing = { updated: false, error: message }
-  }
-
-  try {
-    const hardness = await scrapeWaterHardness()
-    if (hardness.klecuvka !== null || hardness.tlumacov !== null) {
-      const existingSources = readJson('water_sources.json', DEFAULT_WATER_SOURCES)
-      const updated = existingSources.map((source) => {
-        if (source.id === 'klecuvka' && hardness.klecuvka !== null) {
-          const normalized = normalizeHardness(hardness.klecuvka)
-          return {
-            ...source,
-            hardness: normalized.hardness,
-            hardnessMmol: normalized.hardnessMmol,
-          }
-        }
-        if (source.id === 'tlumacov' && hardness.tlumacov !== null) {
-          const normalized = normalizeHardness(hardness.tlumacov)
-          return {
-            ...source,
-            hardness: normalized.hardness,
-            hardnessMmol: normalized.hardnessMmol,
-          }
-        }
-        return source
-      })
-
-      writeJson('water_sources.json', updated)
-      metadata.waterQualityUpdatedAt = now
-      results.waterHardness = {
-        updated: true,
-        klecuvka: hardness.klecuvka,
-        tlumacov: hardness.tlumacov,
-      }
-    } else {
-      results.waterHardness = {
-        updated: false,
-        note: 'Hodnoty tvrdosti nenalezeny v PDF',
-        debug: hardness.rawText,
-      }
+  for (const [name, step] of Object.entries(steps)) {
+    try {
+      await step(log)
+    } catch (error) {
+      errors.push(`${name}: ${error instanceof Error ? error.message : String(error)}`)
     }
-  } catch (error) {
-    const message = error instanceof Error ? error.message : String(error)
-    errors.push(`waterHardness: ${message}`)
-    results.waterHardness = { updated: false, error: message }
   }
 
-  try {
-    const quality = readJson('water_quality.json', DEFAULT_WATER_QUALITY)
-    quality.timestamp = now
-    quality.score = calculateWaterQuality(quality.parameters, quality.bacteriological)
-    writeJson('water_quality.json', quality)
-    results.timestamp = { updated: true, value: quality.timestamp }
-  } catch (error) {
-    const message = error instanceof Error ? error.message : String(error)
-    errors.push(`timestamp: ${message}`)
-    results.timestamp = { updated: false, error: message }
+  if (errors.length > 0) {
+    store.rollback()
+    console.error(`\nChyby:\n${errors.join('\n')}`)
+    console.error('\nŽádná změna nebyla zapsána.')
+    process.exitCode = 1
+    return
   }
 
-  metadata.lastUpdate = now.split('T')[0]
-  metadata.siteDataUpdatedAt = now
-  writeJson('metadata.json', metadata)
-  results.metadata = { updated: true, data: metadata }
-
-  console.log(JSON.stringify({ ok: errors.length === 0, results, errors }, null, 2))
-  if (errors.length > 0) process.exitCode = 1
+  store.commit()
+  console.log(log.length > 0 ? log.join('\n') : 'Žádná změna dat.')
 }
 
 main()

@@ -15,17 +15,28 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { formatNumber, formatCurrency, formatDate } from "@/lib/utils";
-import type { currentWaterQuality, dataMetadata, waterPricing } from "@/lib/data";
+import { PARAMETER_META, describeLimit, formatPeriod } from "@/lib/report-display";
+import type { DataMetadata, ParameterKey, PlantSummary, QualityReport, WaterPricing } from "@/lib/types";
 
 interface Props {
-  quality: typeof currentWaterQuality;
-  pricing: typeof waterPricing;
-  meta: typeof dataMetadata;
+  report: QualityReport;
+  sources: PlantSummary[];
+  allWithinLimits: boolean;
+  pricing: WaterPricing;
+  meta: DataMetadata;
 }
 
-export default function HomeClient({ quality, pricing, meta }: Props) {
-  const { parameters, bacteriological, score } = quality;
-  const lastUpdate = new Date(meta.siteDataUpdatedAt);
+const KEY_PARAMETERS: { key: ParameterKey; icon: typeof Droplets }[] = [
+  { key: "hardness", icon: Droplets },
+  { key: "pH", icon: Zap },
+  { key: "nitrates", icon: TrendingUp },
+  { key: "iron", icon: Thermometer },
+  { key: "calcium", icon: Waves },
+  { key: "ecoli", icon: AlertCircle },
+];
+
+export default function HomeClient({ report, sources, allWithinLimits, pricing, meta }: Props) {
+  const period = formatPeriod(report.period);
 
   return (
     <div className="min-h-screen flex flex-col relative">
@@ -38,7 +49,7 @@ export default function HomeClient({ quality, pricing, meta }: Props) {
               <div className="inline-flex items-center gap-2 px-4 py-2 bg-water-50 border border-water-200 rounded-full">
                 <div className="w-2 h-2 bg-fresh-500 rounded-full animate-pulse"></div>
                 <span className="text-sm font-mono text-water-900">
-                  Aktualizováno {formatDate(lastUpdate)}
+                  Rozbor za {period} · data načtena {formatDate(report.updatedAt)}
                 </span>
               </div>
 
@@ -48,9 +59,10 @@ export default function HomeClient({ quality, pricing, meta }: Props) {
               </h1>
 
               <p className="text-lg md:text-xl text-earth-700 leading-relaxed">
-                Transparentní přístup k datům o vaší pitné vodě. Sledujte
-                pravidelně aktualizované údaje o kvalitě, tvrdosti a dalších
-                parametrech.
+                {allWithinLimits
+                  ? `Voda z úpraven Tlumačov a Klečůvka vyhověla v rozboru za ${period} všem hygienickým limitům.`
+                  : `V rozboru za ${period} překročil některý ukazatel hygienický limit. Podrobnosti najdete v detailním rozboru.`}{" "}
+                Hodnoty přebíráme z veřejných rozborů Vodárny Zlín.
               </p>
 
               <div className="flex flex-wrap gap-4">
@@ -66,39 +78,35 @@ export default function HomeClient({ quality, pricing, meta }: Props) {
               </div>
 
               <div className="grid grid-cols-2 gap-4 pt-6">
-                <div className="glass-card p-4">
-                  <div className="flex items-center gap-2 mb-2">
-                    <Droplets className="h-5 w-5 text-water-600" />
-                    <span className="text-sm text-earth-600">Tvrdost</span>
+                {sources.map((source) => (
+                  <div key={source.id} className="glass-card p-4">
+                    <div className="flex items-center gap-2 mb-2">
+                      <Droplets className="h-5 w-5 text-water-600" />
+                      <span className="text-sm text-earth-600">Tvrdost · {source.name}</span>
+                    </div>
+                    <p className="text-2xl font-mono font-bold text-earth-900">
+                      {formatNumber(source.hardness)} °dH
+                    </p>
+                    <p className="text-xs text-fresh-600 mt-1">{source.waterType}</p>
                   </div>
-                  <p className="text-2xl font-mono font-bold text-earth-900">
-                    {formatNumber(parameters.hardness)} °dH
-                  </p>
-                  <p className="text-xs text-fresh-600 mt-1">Střední voda</p>
-                </div>
-
-                <div className="glass-card p-4">
-                  <div className="flex items-center gap-2 mb-2">
-                    <Zap className="h-5 w-5 text-water-600" />
-                    <span className="text-sm text-earth-600">pH</span>
-                  </div>
-                  <p className="text-2xl font-mono font-bold text-earth-900">
-                    {formatNumber(parameters.pH, 2)}
-                  </p>
-                  <p className="text-xs text-fresh-600 mt-1">Ideální</p>
-                </div>
+                ))}
               </div>
             </div>
 
-            <div className="flex justify-center animate-slide-up animation-delay-200">
-              <div className="max-w-sm">
-                <WaterScore score={score} size="lg" />
-                <p className="mt-4 text-sm text-earth-600 text-center leading-relaxed">
-                  Skóre je vlastní orientační index VodaZlín.cz. Vychází z toho,
-                  jak daleko jsou vybrané parametry od hygienických limitů a
-                  obvyklých doporučených rozsahů; nenahrazuje oficiální rozbor.
-                </p>
+            <div className="flex flex-col items-center animate-slide-up animation-delay-200">
+              <div className="flex flex-wrap justify-center gap-8">
+                {sources.map((source) => (
+                  <div key={source.id} className="text-center">
+                    <WaterScore score={source.quality} size="md" />
+                    <p className="mt-2 font-mono font-bold text-earth-900">{source.name}</p>
+                  </div>
+                ))}
               </div>
+              <p className="mt-6 max-w-sm text-sm text-earth-600 text-center leading-relaxed">
+                Skóre je vlastní orientační index VodaZlín.cz spočítaný z rozboru
+                za {period}. Nenahrazuje oficiální hodnocení; jak vzniká, popisuje
+                stránka <Link href="/o-projektu/" className="underline underline-offset-4">O projektu</Link>.
+              </p>
             </div>
           </div>
         </section>
@@ -109,17 +117,31 @@ export default function HomeClient({ quality, pricing, meta }: Props) {
               Klíčové parametry
             </h2>
             <p className="text-lg text-earth-700">
-              Aktuální měření kvality pitné vody ve Zlíně
+              Výsledky rozboru Vodárny Zlín za {period}.{" "}
+              <a href={report.sourceUrl} target="_blank" rel="noopener noreferrer" className="text-water-700 underline underline-offset-4">
+                Zdrojový dokument (PDF)
+              </a>
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <ParameterCard icon={Droplets} label="Tvrdost vody" value={formatNumber(parameters.hardness)} unit="°dH" status="good" description="Obsah Ca a Mg iontů" limit={{ min: 2, max: 50, optimal: [7, 14] }} />
-            <ParameterCard icon={Zap} label="pH hodnota" value={formatNumber(parameters.pH, 2)} unit="" status="good" description="Kyselost/zásaditost" limit={{ min: 6.5, max: 9.5, optimal: [7.0, 8.0] }} />
-            <ParameterCard icon={TrendingUp} label="Dusičnany" value={formatNumber(parameters.nitrates)} unit="mg/l" status="good" description="NO₃⁻" limit={{ max: 50, optimal: [0, 25] }} />
-            <ParameterCard icon={Thermometer} label="Železo" value={formatNumber(parameters.iron, 2)} unit="mg/l" status="good" description="Fe" limit={{ max: 0.2, optimal: [0, 0.1] }} />
-            <ParameterCard icon={Waves} label="Vápník" value={formatNumber(parameters.calcium)} unit="mg/l" status="good" description="Ca" limit={{ min: 30, max: 150, optimal: [40, 80] }} />
-            <ParameterCard icon={AlertCircle} label="Bakterie" value={bacteriological.ecoli} unit="KTJ/100ml" status="good" description="E. coli" limit={{ max: 0, optimal: [0, 0] }} />
+            {KEY_PARAMETERS.map(({ key, icon }) => {
+              const meta = PARAMETER_META[key];
+              return (
+                <ParameterCard
+                  key={key}
+                  icon={icon}
+                  label={meta.label}
+                  description={meta.description}
+                  unit={meta.unit}
+                  values={sources.map((source) => ({
+                    label: source.name,
+                    value: report.plants[source.id][key].raw,
+                  }))}
+                  limit={describeLimit(report.limits[key], meta.unit)}
+                />
+              );
+            })}
           </div>
         </section>
 
@@ -180,13 +202,13 @@ export default function HomeClient({ quality, pricing, meta }: Props) {
                     <p className="text-sm text-earth-700 mb-3">Roční náklady domácnosti:</p>
                     <div className="space-y-2">
                       <div className="flex justify-between">
-                        <span className="text-sm">2 osoby (58 m³/rok)</span>
+                        <span className="text-sm">2 osoby ({pricing.averageConsumption.household2} m³/rok)</span>
                         <span className="font-mono font-bold text-water-600">
                           {formatCurrency(pricing.averageConsumption.household2 * pricing.prices.total.priceWithVat)}
                         </span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-sm">4 osoby (116 m³/rok)</span>
+                        <span className="text-sm">4 osoby ({pricing.averageConsumption.household4} m³/rok)</span>
                         <span className="font-mono font-bold text-water-600">
                           {formatCurrency(pricing.averageConsumption.household4 * pricing.prices.total.priceWithVat)}
                         </span>
@@ -212,8 +234,8 @@ export default function HomeClient({ quality, pricing, meta }: Props) {
               Kvalita vody ve vaší části města
             </h2>
             <p className="text-lg mb-8 text-water-50 max-w-2xl mx-auto">
-              Podívejte se na interaktivní mapu Zlína a zjistěte kvalitu vody
-              přesně ve vaší lokalitě
+              Podívejte se na mapu Zlína a zjistěte, ze které úpravny je vaše
+              lokalita zásobovaná a jakou tvrdost tam voda má
             </p>
             <Link
               href="/mapa"

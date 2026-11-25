@@ -3,8 +3,8 @@ import Link from "next/link";
 import ArticleLayout from "@/components/ArticleLayout";
 import Footer from "@/components/layout/Footer";
 import Header from "@/components/layout/Header";
-import { getWaterQuality } from "@/lib/server-data";
-import { formatNumber } from "@/lib/utils";
+import { getLatestReport, getLimitExceedances, getPlantScore, periodLabel } from "@/lib/server-data";
+import { plants } from "@/lib/data";
 
 export const metadata: Metadata = {
   title: "Je voda ve Zlíně pitná? | VodaZlín.cz",
@@ -12,7 +12,8 @@ export const metadata: Metadata = {
 };
 
 export default function JeVodaPitnaPage() {
-  const quality = getWaterQuality();
+  const report = getLatestReport();
+  const exceedances = getLimitExceedances(report);
 
   return (
     <div className="min-h-screen flex flex-col relative">
@@ -23,17 +24,42 @@ export default function JeVodaPitnaPage() {
       >
         <h2>Co ukazují aktuální hodnoty</h2>
         <p>
-          Orientační index webu je {quality.score}/100. pH je {formatNumber(quality.parameters.pH, 2)},
-          dusičnany {formatNumber(quality.parameters.nitrates)} mg/l a E. coli
-          je uvedena jako {quality.bacteriological.ecoli} KTJ/100 ml.
+          Vodárna Zlín zveřejňuje každé čtvrtletí výsledky rozborů pitné vody.
+          Podle rozboru za {periodLabel(report.period)}:
         </p>
+        <ul>
+          {plants.map((plant) => {
+            const p = report.plants[plant.id];
+            return (
+              <li key={plant.id}>
+                {plant.name}: pH {p.pH.raw}, dusičnany {p.nitrates.raw} mg/l,
+                E. coli {p.ecoli.raw} KTJ/100 ml, enterokoky {p.enterococci.raw} KTJ/100 ml
+                (orientační index webu {getPlantScore(report, plant.id)}/100)
+              </li>
+            );
+          })}
+        </ul>
         <p>
-          V běžném čtení to znamená, že hlavní parametry v přehledu nepůsobí
-          jako varování před pitím vody z veřejného vodovodu. pH je v neutrálním
-          pásmu, dusičnany jsou v přehledu pod hygienickým limitem a
-          mikrobiologické ukazatele jsou uváděné jako nulové. Takové shrnutí je
-          ale pořád orientační, protože web neprovádí vlastní odběry.
+          Zdroj:{" "}
+          <a href={report.sourceUrl} target="_blank" rel="noopener noreferrer">
+            {report.title}
+          </a>.
         </p>
+        {exceedances.length === 0 ? (
+          <p>
+            V běžném čtení to znamená, že rozbor nepůsobí jako varování před
+            pitím vody z veřejného vodovodu. Všechny sledované ukazatele jsou v
+            hygienických limitech a mikrobiologické ukazatele jsou nulové. Web
+            ale neprovádí vlastní odběry; rozhodující jsou vždy informace
+            provozovatele a hygienické stanice.
+          </p>
+        ) : (
+          <div className="article-note">
+            V rozboru za {periodLabel(report.period)} překročil některý ukazatel
+            hygienický limit. Řiďte se pokyny Vodárny Zlín a hygienické stanice
+            a podívejte se do zdrojového dokumentu.
+          </div>
+        )}
 
         <h2>Co z toho plyne pro domácnost</h2>
         <p>

@@ -3,16 +3,17 @@ import Link from "next/link";
 import ArticleLayout from "@/components/ArticleLayout";
 import Footer from "@/components/layout/Footer";
 import Header from "@/components/layout/Header";
-import { getWaterQuality, getWaterSources } from "@/lib/server-data";
+import MunicipalityHardnessTable from "@/components/MunicipalityHardnessTable";
+import { getMunicipalityHardness, getWaterSources, periodLabel } from "@/lib/server-data";
 import { formatNumber } from "@/lib/utils";
 
 export const metadata: Metadata = {
-  title: "Tvrdost vody ve Zlíně | VodaZlín.cz",
-  description: "Co znamená tvrdost vody ve Zlíně, jak se liší podle zdroje a proč je důležitá pro spotřebiče i domácnost.",
+  title: "Tvrdost vody ve Zlíně a okolních obcích | VodaZlín.cz",
+  description: "Vyhledejte tvrdost vody ve Zlíně a obcích na Zlínsku. Hodnoty v mmol/l a °dH podle veřejného přehledu Vodárny Zlín.",
 };
 
 export default function TvrdostVodyPage() {
-  const quality = getWaterQuality();
+  const municipalities = getMunicipalityHardness();
   const sources = getWaterSources();
 
   return (
@@ -22,10 +23,24 @@ export default function TvrdostVodyPage() {
         title="Tvrdost vody ve Zlíně"
         description="Tvrdost vody popisuje hlavně obsah vápníku a hořčíku. Pro zdraví obvykle nebývá problém, ale v domácnosti rozhoduje o vodním kameni, dávkování prostředků a nastavení spotřebičů."
       >
-        <h2>Aktuální orientační hodnota</h2>
+        <h2>Aktuální hodnoty</h2>
         <p>
-          Souhrnná hodnota pro centrální přehled je {formatNumber(quality.parameters.hardness)} °dH.
-          Podle běžné klasifikace jde o středně tvrdou vodu.
+          Podle rozboru Vodárny Zlín za {periodLabel(sources[0].period)} má
+          voda z úpraven, které zásobují Zlín, tuto tvrdost:
+        </p>
+        <ul>
+          {sources.map((source) => (
+            <li key={source.id}>
+              {source.name}: {formatNumber(source.hardness)} °dH
+              ({formatNumber(source.hardnessMmol, 2)} mmol/l), {source.waterType}
+            </li>
+          ))}
+        </ul>
+        <p>
+          Zdroj:{" "}
+          <a href={sources[0].sourceUrl} target="_blank" rel="noopener noreferrer">
+            Kvalita pitné vody na Zlínsku, {periodLabel(sources[0].period)}
+          </a>.
         </p>
         <p>
           Pro domácnost je důležité hlavně to, že tato hodnota není varováním
@@ -41,20 +56,34 @@ export default function TvrdostVodyPage() {
           tom, ze kterého vodního zdroje nebo úpravny je konkrétní lokalita
           zásobovaná.
         </p>
-        <ul>
-          {sources.map((source) => (
-            <li key={source.id}>
-              {source.name}: {formatNumber(source.hardness)} °dH
-              ({formatNumber(source.hardnessMmol, 2)} mmol/l), {source.waterType}
-            </li>
-          ))}
-        </ul>
+        <p>
+          Východní část Zlína zásobuje ÚV Klečůvka, západní část ÚV Tlumačov.
+          Tvrdost v jednotlivých obcích Zlínska uvádí Vodárna Zlín v{" "}
+          <a href={municipalities.sourceUrl} target="_blank" rel="noopener noreferrer">
+            přehledu tvrdosti po obcích{municipalities.year ? ` (${municipalities.year})` : ""}
+          </a>.
+        </p>
         <p>
           Rozdíl několika stupňů německé tvrdosti už může být doma poznat.
           V části napojené na měkčí vodu se vodní kámen obvykle tvoří pomaleji,
           zatímco u tvrdší vody je vhodnější pečlivěji nastavit spotřebiče a
           počítat s pravidelným odvápněním. Proto na webu neuvádíme jen jednu
           hodnotu, ale propojujeme ji také s mapou a přehledem zdrojů.
+        </p>
+
+        <h2>Tvrdost vody podle obce</h2>
+        <p>
+          V tabulce jsou hodnoty z přehledu Vodárny Zlín pro rok {municipalities.year}.
+          Údaj v °dH je přepočtený z publikované hodnoty v mmol/l poměrem
+          1 mmol/l = 5,61 °dH. Vyhledávání funguje i bez diakritiky.
+        </p>
+        <MunicipalityHardnessTable municipalities={municipalities.municipalities} />
+        <p>
+          Jde o hodnotu pro obec nebo zásobovanou oblast, ne o měření na
+          konkrétním kohoutku. Původní dokument najdete v{" "}
+          <a href={municipalities.sourceUrl} target="_blank" rel="noopener noreferrer">
+            přehledu Vodárny Zlín (PDF)
+          </a>.
         </p>
 
         <h2>Co tvrdost ovlivňuje</h2>

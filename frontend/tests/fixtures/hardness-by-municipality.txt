@@ -1,0 +1,67 @@
+
+
+Tvrdost vodyTvrdost vody
+(mmol/l)(mmol/l)
+Biskupice1,6Nevšová1,3
+Bohuslavice n. V.0,9Oldřichovice2,4
+Bohuslavice u ZL.2,3Ostrata 1,6
+Brumov-Bylnice2,5Otrokovice2,2
+Březnice2,2Petrůvka 1,1
+Březová1,9Podhradí0,6
+Dešná2,0Pohořelice2,3
+Divnice1,1Polichno1,6
+Dobrkovice1,8Poteč1,0
+Dolní Lhota1,2Pozlovice 1,3
+Doubravy1,6Přečkovice1,1
+Drnovice u VK2,4Příluky u ZL.1,7
+Fryšták 1,9Racková2,4
+Halenkovice 2,2Rokytnice1,0
+Horní Lhota1,0Rudimov1,6
+Hostišová2,5Řetechov1,5
+Hrobice 1,5Salaš u ZL.2,2
+Hřivinův Újezd1,7Sazovice2,3
+Chlum2,3Sehradice1,5
+Jaroslavice1,7Slavičín1,4
+Jestřabí2,6Slopné1,8
+Kaňovice 1,6Smolina1,0
+Karlovice2,5Spytihněv2,3
+Kašava (z VDJ Kašava)2,1Sv. Štěpán2,4
+Kašava (z ÚV Klečůvka)1,6Šarovy 2,3
+Kladná Žilín1,1Štítná nad Vláří2,5
+Komárov u Napajedel2,4Tečovice2,4
+Křekov 1,1Tichov1,0
+Lhota u Malenovic2,3Tlumačov2,4
+Lhotka2,3Újezd u VK1,4
+Lípa nad Dřevnicí1,8Valašské Klobouky1,0
+Lipina 1,0Veliková 1,9
+Lipová (u Slavičína)1,4Velký Ořechov1,8
+Ludkovice2,1Vizovice (Kosmata)1,3
+Luhačovice1,6Vizovice (z ÚV Klečůvka)1,7
+Lukov1,6Vlachova Lhota1,0
+Lukoveček (z VDJ Lukoveček)3,1Vysoké Pole2,4
+Lukoveček (z ÚV Klečůvka)1,7Zádveřice - Raková1,7
+Machová2,4Zlín - Želechovice1,7
+Mirošov 1,0Zlín z ÚV Klečůvka (východní část)1,7
+Mysločovice2,4Zlín z ÚV Tlumačov (západní část)2,4
+Napajedla2,5Žlutava2,3
+Stupně tvrdosti vody
+mmol/l°dH°F
+1 mmol/l = 5,61° dH (německých stupňů)
+velmi měkká
+<0,5<2,8<5
+1 mmol/l = 10° F (francouzských stupňů)
+měkká
+0,7 - 1,253,9 - 7,07 - 12,5
+1° dH   = 0,18 mmol/l
+středně tvrdá
+1,26 - 2,57,01 - 14,012,51 - 25,0
+1° dH   = 1,78° F
+tvrdá
+2,51 - 3,7514,01 - 21,025,01 - 37,5
+1° F    = 0,1 mmol/lvelmi tvrdá
+>3,76>21,01>37,51
+1° F    = 0,56° dH
+Dle vyhl.č.252/2004 Sb., v platném znění, je doporučená hodnota tvrdosti pitné vody (vápník + hořčík) v intervalu  2,0 až 3,5 mmol/l.
+Průměrná tvrdost pitné vody v obcích na Zlínsku - aktuální
+LokalitaLokalita
+Přepočty tvrdosti vody

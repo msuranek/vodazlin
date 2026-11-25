@@ -6,14 +6,23 @@ on:
   pull_request:
     branches: [master]
   schedule:
-    - cron: '17 4 1 * *'
+    # Jednou týdně (pondělí 4:17 UTC) zkontrolovat nová data Vodárny Zlín.
+    - cron: '17 4 * * 1'
   workflow_dispatch:
 
 permissions:
   contents: write
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name == 'pull_request' && github.ref || 'master' }}
+  cancel-in-progress: false
+
 jobs:
-  build-static-dist:
+  # Stáhne data a commitne jen ty soubory, které prošly validací a změnily se.
+  # Push přes GITHUB_TOKEN nespouští další workflow, proto build běží jako
+  # následující job ve stejném běhu.
+  update-data:
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout source
@@ -30,14 +39,47 @@ jobs:
         working-directory: frontend
         run: npm ci
 
+      - name: Update data
+        working-directory: frontend
+        run: npm run update-data
+
+      - name: Commit changed data
+        run: |
+          if [ -n "$(git status --porcelain frontend/content)" ]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add frontend/content
+            git commit -m "Aktualizace dat Vodárny Zlín"
+            git push
+          else
+            echo "Žádná změna dat."
+          fi
+
+  build-static-dist:
+    needs: update-data
+    if: always() && needs.update-data.result != 'cancelled'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+        with:
+          # Po aktualizaci dat stavět z aktuálního masteru (včetně nového commitu).
+          ref: ${{ github.event_name != 'pull_request' && 'master' || '' }}
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install dependencies
+        working-directory: frontend
+        run: npm ci
+
       - name: Run tests
         working-directory: frontend
         run: npm test
-
-      - name: Update data snapshot
-        if: github.event_name != 'pull_request'
-        working-directory: frontend
-        run: npm run update-data
 
       - name: Build static site
         working-directory: frontend

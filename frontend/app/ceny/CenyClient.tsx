@@ -14,11 +14,11 @@ import {
   ExternalLink,
 } from "lucide-react";
 import { formatCurrency, formatDate, formatNumber } from "@/lib/utils";
-import type { waterPricing, dataMetadata } from "@/lib/data";
+import type { DataMetadata, WaterPricing } from "@/lib/types";
 
 interface Props {
-  pricing: typeof waterPricing;
-  meta: typeof dataMetadata;
+  pricing: WaterPricing;
+  meta: DataMetadata;
 }
 
 export default function CenyClient({ pricing, meta }: Props) {
@@ -48,7 +48,7 @@ export default function CenyClient({ pricing, meta }: Props) {
           </p>
           <div className="flex items-center gap-2 text-sm text-earth-600">
             <Calendar className="h-4 w-4" />
-            <span>Poslední aktualizace ceníku: {formatDate(meta.pricesUpdatedAt)}</span>
+            <span>Poslední aktualizace dat: {formatDate(meta.updatedAt)}</span>
           </div>
         </section>
 
@@ -262,7 +262,7 @@ export default function CenyClient({ pricing, meta }: Props) {
 
         <section className="container-custom py-8 pb-16">
           <h2 className="text-2xl font-mono font-bold text-earth-900 mb-6">
-            Průměrná spotřeba v ČR
+            Průměrná spotřeba ve Zlínském kraji
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="glass-card p-6 text-center">
@@ -294,9 +294,8 @@ export default function CenyClient({ pricing, meta }: Props) {
             <div className="glass-card p-6">
               <h2 className="text-xl font-mono font-bold text-earth-900 mb-3">Pro jaké období platí</h2>
               <p className="text-sm text-earth-700 leading-relaxed">
-                Ceník na této stránce je uveden jako platný od {pricing.validFrom}.
-                Datum aktualizace znamená, kdy byl ceník naposledy načten do
-                statického snapshotu webu.
+                Ceník na této stránce je platný od {pricing.validFrom}. Web
+                jednou týdně kontroluje, zda Vodárna Zlín nezveřejnila nový ceník.
               </p>
             </div>
             <div className="glass-card p-6">
@@ -304,6 +303,12 @@ export default function CenyClient({ pricing, meta }: Props) {
               <p className="text-sm text-earth-700 leading-relaxed">
                 Roční spotřebu násobíme součtem vodného a stočného s DPH.
                 Měsíční částka je roční odhad rozdělený na dvanáct měsíců.
+                Výchozí spotřeba {pricing.averageConsumption.person} l na osobu
+                a den je údaj{" "}
+                <a href={pricing.averageConsumption.sourceUrl} target="_blank" rel="noopener noreferrer" className="text-water-700 underline underline-offset-4">
+                  ČSÚ
+                </a>{" "}
+                pro {pricing.averageConsumption.region} za rok {pricing.averageConsumption.year}.
               </p>
             </div>
             <div className="glass-card p-6">

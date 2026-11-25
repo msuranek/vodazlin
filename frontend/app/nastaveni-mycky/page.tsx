@@ -3,7 +3,7 @@ import Link from "next/link";
 import ArticleLayout from "@/components/ArticleLayout";
 import Footer from "@/components/layout/Footer";
 import Header from "@/components/layout/Header";
-import { getWaterQuality } from "@/lib/server-data";
+import { getWaterSources, periodLabel } from "@/lib/server-data";
 import { formatNumber } from "@/lib/utils";
 
 export const metadata: Metadata = {
@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 };
 
 export default function NastaveniMyckyPage() {
-  const quality = getWaterQuality();
+  const sources = getWaterSources();
 
   return (
     <div className="min-h-screen flex flex-col relative">
@@ -23,9 +23,20 @@ export default function NastaveniMyckyPage() {
       >
         <h2>Jakou hodnotu použít</h2>
         <p>
-          Pro orientační nastavení můžete vyjít z hodnoty {formatNumber(quality.parameters.hardness)} °dH.
-          Pokud znáte přesnou lokalitu a zdroj vody, porovnejte ji také s mapou
-          a přehledem zdrojů.
+          Hodnota záleží na tom, ze které úpravny je vaše lokalita zásobovaná.
+          Podle rozboru Vodárny Zlín za {periodLabel(sources[0].period)}:
+        </p>
+        <ul>
+          {sources.map((source) => (
+            <li key={source.id}>
+              {source.name}: {formatNumber(source.hardness)} °dH
+              ({formatNumber(source.hardnessMmol, 2)} mmol/l)
+            </li>
+          ))}
+        </ul>
+        <p>
+          Která úpravna zásobuje vaši obec nebo část Zlína, zjistíte na{" "}
+          <Link href="/mapa/">mapě</Link>.
         </p>
         <p>
           Myčky obvykle nechtějí přesné laboratorní číslo na desetiny. V návodu

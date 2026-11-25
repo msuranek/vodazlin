@@ -3,7 +3,8 @@
 import { MapContainer, TileLayer, Marker, Popup, Circle } from "react-leaflet";
 import { Icon, LatLngExpression } from "leaflet";
 import "leaflet/dist/leaflet.css";
-import type { waterSources, zlínDistricts } from "@/lib/data";
+import type { DistrictSummary, PlantSummary } from "@/lib/types";
+import { formatNumber } from "@/lib/utils";
 
 // Fix for default marker icon in Next.js
 const waterIcon = new Icon({
@@ -16,8 +17,8 @@ const waterIcon = new Icon({
 });
 
 interface ZlinMapProps {
-  sources: typeof waterSources;
-  districts: typeof zlínDistricts;
+  sources: PlantSummary[];
+  districts: DistrictSummary[];
   onSelectSource?: (sourceId: string) => void;
   onSelectDistrict?: (districtId: string) => void;
   selectedSource?: string | null;
@@ -84,7 +85,7 @@ export default function ZlinMap({
                 </p>
                 <p>
                   <span className="text-gray-500">Tvrdost:</span>{" "}
-                  <span className="font-semibold">{source.hardness} °dH</span>
+                  <span className="font-semibold">{formatNumber(source.hardness)} °dH</span>
                 </p>
               </div>
             </div>
@@ -122,11 +123,7 @@ export default function ZlinMap({
                   </p>
                   <p>
                     <span className="text-gray-500">Tvrdost:</span>{" "}
-                    <span className="font-semibold">{district.hardness} °dH</span>
-                  </p>
-                  <p>
-                    <span className="text-gray-500">Obyvatel:</span>{" "}
-                    <span className="font-semibold">{district.population.toLocaleString("cs-CZ")}</span>
+                    <span className="font-semibold">{formatNumber(district.hardness)} °dH</span>
                   </p>
                 </div>
               </div>

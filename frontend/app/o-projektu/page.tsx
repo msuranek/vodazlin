@@ -3,7 +3,7 @@ import Link from "next/link";
 import ArticleLayout from "@/components/ArticleLayout";
 import Footer from "@/components/layout/Footer";
 import Header from "@/components/layout/Header";
-import { getDataMetadata, getWaterQuality } from "@/lib/server-data";
+import { getDataMetadata, getWaterSources } from "@/lib/server-data";
 import { formatDate } from "@/lib/utils";
 
 export const metadata: Metadata = {
@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 
 export default function OProjektuPage() {
   const meta = getDataMetadata();
-  const quality = getWaterQuality();
+  const sources = getWaterSources();
 
   return (
     <div className="min-h-screen flex flex-col relative">
@@ -42,35 +42,38 @@ export default function OProjektuPage() {
 
         <h2>Odkud pocházejí data</h2>
         <p>
-          Automaticky se zpracovává veřejný ceník Vodárny Zlín a dostupný
-          veřejný podklad s tvrdostí vody. Tyto hodnoty se při pravidelném
-          buildu webu znovu načítají a ukládají do statického datového
-          snapshotu.
+          Všechna měřená čísla na webu pocházejí z veřejných dokumentů Vodárny
+          Zlín a stahují se automaticky. U hodnot uvádíme úpravnu vody, období
+          rozboru a odkaz na zdrojový dokument.
         </p>
-        <p>
-          Ostatní chemické a mikrobiologické hodnoty v přehledu jsou orientační
-          datový základ webu. Slouží k vysvětlení jednotlivých ukazatelů a jejich
-          vztahu k limitům, ale nejsou při každém měsíčním běhu scraperu nově
-          stahované z laboratorních protokolů.
-        </p>
-        <p>
-          U takových hodnot proto používáme opatrnou formulaci: nejde o živý
-          laboratorní monitoring. Pokud je údaj určený hlavně k vysvětlení
-          významu parametru, stránka to má říkat otevřeně. Pokud je údaj načtený
-          automaticky, uvádíme datum aktualizace datového snapshotu.
-        </p>
-        <h3>Automaticky aktualizujeme</h3>
         <ul>
-          <li>cenu vodného a stočného podle zveřejněného ceníku,</li>
-          <li>dostupné hodnoty tvrdosti vody z veřejného PDF podkladu, pokud je parser najde,</li>
-          <li>metadata o poslední aktualizaci datového snapshotu.</li>
+          <li>
+            <strong>Kvalita vody</strong> – čtvrtletní tabulky „Kvalita pitné
+            vody na Zlínsku“ s výsledky pro ÚV Tlumačov a ÚV Klečůvka (dusičnany,
+            bakterie, železo, mangan, tvrdost, vápník, hořčík, pH a hygienické
+            limity). Archiv čtvrtletí tvoří i historii měření.
+          </li>
+          <li>
+            <strong>Tvrdost vody po obcích</strong> – přehled tvrdosti pitné vody
+            v obcích na Zlínsku.
+          </li>
+          <li>
+            <strong>Zásobované obce</strong> – výčet obcí a částí Zlína, které
+            zásobuje jednotlivá úpravna.
+          </li>
+          <li>
+            <strong>Cena vodného a stočného</strong> – ceník platný pro daný rok.
+          </li>
+          <li>
+            <strong>Průměrná spotřeba vody</strong> – údaj ČSÚ za Zlínský kraj
+            (aktualizujeme ručně jednou ročně).
+          </li>
         </ul>
-        <h3>Orientační datový základ</h3>
-        <ul>
-          <li>pH, dusičnany, železo, mangan, vápník, hořčík, chloridy a sírany,</li>
-          <li>mikrobiologické ukazatele v přehledu,</li>
-          <li>historická tabulka a přiřazení částí města ke zdrojům.</li>
-        </ul>
+        <p>
+          Hodnoty pod mezí stanovitelnosti laboratoře zobrazujeme tak, jak je
+          uvádí rozbor (například „&lt;0,02“). Přiřazení částí Zlína k úpravnám je
+          hrubé: Vodárna Zlín uvádí jen východní a západní část města.
+        </p>
         <ul>
           {meta.sources.map((source) => (
             <li key={source.url}>
@@ -83,25 +86,18 @@ export default function OProjektuPage() {
 
         <h2>Jak často se web aktualizuje</h2>
         <p>
-          Ceník je kontrolovaný podle zveřejněných cenových údajů, tvrdost vody
-          podle dostupných veřejných podkladů. Poslední aktualizace datového
-          snapshotu proběhla {formatDate(meta.siteDataUpdatedAt)}.
-        </p>
-        <p>
-          Datum pro kvalitu vody a datum pro ceny neznamená totéž. Ceny se mění
-          podle ceníku, zatímco parametry kvality se vyhodnocují podle dostupných
-          měření a podkladů.
-        </p>
-        <p>
-          Měsíční build webu neznamená, že se každý měsíc změní všechny hodnoty.
-          Některé veřejné podklady se mění ročně, jiné nepravidelně. Statický web
-          proto ukazuje poslední známý datový stav a neslibuje real-time dohled
-          nad vodovodní sítí.
+          Web jednou týdně kontroluje, zda Vodárna Zlín nezveřejnila nové
+          dokumenty. Nový rozbor se na webu objeví jen tehdy, když projde
+          kontrolou (správné sloupce, limity a rozsahy hodnot). Data se naposledy
+          změnila {formatDate(meta.updatedAt)}; nejnovější rozbor je za{" "}
+          {meta.latestPeriodLabel}.
         </p>
 
         <h2>Jak vzniká orientační index</h2>
         <p>
-          Hodnota {quality.score}/100 je vlastní orientační index VodaZlín.cz.
+          Hodnoty{" "}
+          {sources.map((source) => `${source.name} ${source.quality}/100`).join(", ")}{" "}
+          jsou vlastní orientační index VodaZlín.cz počítaný z posledního rozboru.
           Začíná na 96 bodech a klesá podle vzdálenosti vybraných parametrů od
           hygienických limitů a běžně příznivých rozsahů.
         </p>

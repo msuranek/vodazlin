@@ -19,20 +19,57 @@ import {
   Calendar,
   ChevronDown,
   ChevronUp,
+  FileText,
 } from "lucide-react";
-import { formatNumber, formatDate } from "@/lib/utils";
-import type { currentWaterQuality, historicalData, waterSources, healthLimits, dataMetadata } from "@/lib/data";
+import { formatDate } from "@/lib/utils";
+import { PARAMETER_META, describeLimit, formatPeriod, formatPeriodShort } from "@/lib/report-display";
+import type { DataMetadata, ParameterKey, PlantId, PlantSummary, QualityDocument, QualityReport } from "@/lib/types";
 
-interface Props {
-  quality: typeof currentWaterQuality;
-  historical: typeof historicalData;
-  sources: typeof waterSources;
-  limits: typeof healthLimits;
-  meta: typeof dataMetadata;
+interface HistoryRow {
+  period: string;
+  title: string;
+  sourceUrl: string;
+  plants: { id: PlantId; hardness: string; pH: string; nitrates: string; iron: string; score: number }[];
 }
 
-export default function KvalitaClient({ quality, historical, sources, limits, meta }: Props) {
-  const { parameters, bacteriological, score } = quality;
+interface Props {
+  report: QualityReport;
+  history: HistoryRow[];
+  sources: PlantSummary[];
+  documents: QualityDocument[];
+  allWithinLimits: boolean;
+  meta: DataMetadata;
+}
+
+const CHEMICAL: { key: ParameterKey; icon: typeof Droplets }[] = [
+  { key: "nitrates", icon: TrendingUp },
+  { key: "iron", icon: Thermometer },
+  { key: "manganese", icon: Thermometer },
+  { key: "hardness", icon: Droplets },
+  { key: "calcium", icon: Waves },
+  { key: "magnesium", icon: Waves },
+  { key: "pH", icon: Zap },
+];
+
+const BACTERIA: ParameterKey[] = ["ecoli", "enterococci", "coliformBacteria"];
+
+export default function KvalitaClient({ report, history, sources, documents, allWithinLimits, meta }: Props) {
+  const period = formatPeriod(report.period);
+  const plantName = (id: PlantId) => sources.find((source) => source.id === id)?.name ?? id;
+  const card = (key: ParameterKey, icon: typeof Droplets) => {
+    const info = PARAMETER_META[key];
+    return (
+      <ParameterCard
+        key={key}
+        icon={icon}
+        label={info.label}
+        description={info.description}
+        unit={info.unit}
+        values={sources.map((source) => ({ label: source.name, value: report.plants[source.id][key].raw }))}
+        limit={describeLimit(report.limits[key], info.unit)}
+      />
+    );
+  };
   const [expandedSource, setExpandedSource] = useState<string | null>(null);
 
   return (
@@ -47,27 +84,68 @@ export default function KvalitaClient({ quality, historical, sources, limits, me
                 Kvalita pitné vody ve Zlíně
               </h1>
               <p className="text-lg text-earth-700 mb-6">
-                Podrobný přehled všech měřených parametrů pitné vody.
-                Data jsou aktualizována podle dostupných veřejných měření,
-                obvykle {meta.updateFrequency}.
+                Výsledky čtvrtletního rozboru Vodárny Zlín za {period} pro obě
+                úpravny, které zásobují Zlín.{" "}
+                {allWithinLimits
+                  ? "Všechny sledované ukazatele jsou v hygienických limitech."
+                  : "Některý ukazatel překročil hygienický limit – řiďte se pokyny Vodárny Zlín a hygienické stanice."}
               </p>
-              <div className="flex items-center gap-2 text-sm text-earth-600">
-                <Calendar className="h-4 w-4" />
-                <span>Poslední aktualizace: {formatDate(meta.waterQualityUpdatedAt)}</span>
+              <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-earth-600">
+                <span className="flex items-center gap-2">
+                  <Calendar className="h-4 w-4" />
+                  Data načtena {formatDate(report.updatedAt)}
+                </span>
+                <a href={report.sourceUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-water-700 underline underline-offset-4">
+                  <FileText className="h-4 w-4" />
+                  {report.title} (PDF)
+                </a>
               </div>
             </div>
             <div className="flex-shrink-0">
-              <div className="max-w-xs">
-                <WaterScore score={score} size="md" />
-                <p className="mt-3 text-xs text-earth-600 text-center leading-relaxed">
-                  Orientační index počítáme z tvrdosti, pH, dusičnanů, železa,
-                  manganu a mikrobiologických ukazatelů. Maximum je záměrně
-                  rezervované, aby index nepůsobil jako laboratorní garance.
-                </p>
+              <div className="flex gap-6">
+                {sources.map((source) => (
+                  <div key={source.id} className="text-center">
+                    <WaterScore score={source.quality} size="md" />
+                    <p className="mt-2 text-sm font-mono font-bold text-earth-900">{source.name}</p>
+                  </div>
+                ))}
               </div>
+              <p className="mt-3 max-w-xs text-xs text-earth-600 text-center leading-relaxed">
+                Orientační index webu z rozboru za {period}. Není to oficiální
+                hodnocení.
+              </p>
             </div>
           </div>
         </section>
+
+        {documents.length > 0 && (
+          <section className="container-custom pb-4">
+            <div className="glass-card p-5 border border-yellow-200 bg-yellow-50/60">
+              <div className="flex gap-3">
+                <AlertCircle className="h-5 w-5 text-yellow-600 flex-shrink-0 mt-0.5" />
+                <div>
+                  <h2 className="font-mono font-bold text-earth-900 mb-2">
+                    Výjimky a další dokumenty Vodárny Zlín
+                  </h2>
+                  <p className="text-sm text-earth-700 mb-3">
+                    Pro některé lokality platí rozhodnutí hygienické stanice o
+                    výjimce nebo samostatné výsledky rozborů. Týkají se konkrétních
+                    míst, ne celé sítě.
+                  </p>
+                  <ul className="space-y-1">
+                    {documents.map((doc) => (
+                      <li key={doc.url}>
+                        <a href={doc.url} target="_blank" rel="noopener noreferrer" className="text-sm text-water-700 underline underline-offset-4">
+                          {doc.title}
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </section>
+        )}
 
         <section className="container-custom py-8">
           <div className="max-w-4xl mb-10">
@@ -82,6 +160,8 @@ export default function KvalitaClient({ quality, historical, sources, limits, me
                 ovlivňují chuť vody a provoz domácích spotřebičů.
               </p>
               <p>
+                Hodnoty jsou převzaté z rozboru tak, jak je uvádí laboratoř.
+                Zápis „&lt;0,02“ znamená, že látka byla pod mezí stanovitelnosti.
                 Orientační index shrnuje vybrané parametry do jednoho čísla,
                 ale závazný je vždy konkrétní rozbor a oficiální informace.
                 Podrobnější popis výpočtu je na stránce{" "}
@@ -111,7 +191,7 @@ export default function KvalitaClient({ quality, historical, sources, limits, me
                   <div className="flex justify-between">
                     <span className="text-earth-600">Tvrdost vody:</span>
                     <span className="font-mono font-bold text-earth-900">
-                      {source.hardness} °dH ({source.hardnessMmol} mmol/l)
+                      {source.hardness.toLocaleString("cs-CZ")} °dH ({source.hardnessMmol.toLocaleString("cs-CZ")} mmol/l)
                     </span>
                   </div>
                   <div className="flex justify-between">
@@ -162,15 +242,7 @@ export default function KvalitaClient({ quality, historical, sources, limits, me
             <h2 className="text-2xl font-mono font-bold text-earth-900">Chemické parametry</h2>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <ParameterCard icon={Droplets} label="Tvrdost vody" value={formatNumber(parameters.hardness)} unit="°dH" status="good" description="Obsah Ca a Mg iontů" limit={limits.hardness} />
-            <ParameterCard icon={Zap} label="pH hodnota" value={formatNumber(parameters.pH, 2)} unit="" status="good" description="Kyselost/zásaditost" limit={limits.pH} />
-            <ParameterCard icon={TrendingUp} label="Dusičnany" value={formatNumber(parameters.nitrates)} unit="mg/l" status="good" description="NO₃⁻" limit={limits.nitrates} />
-            <ParameterCard icon={Thermometer} label="Železo" value={formatNumber(parameters.iron, 2)} unit="mg/l" status="good" description="Fe" limit={limits.iron} />
-            <ParameterCard icon={Thermometer} label="Mangan" value={formatNumber(parameters.manganese, 2)} unit="mg/l" status="good" description="Mn" limit={limits.manganese} />
-            <ParameterCard icon={Waves} label="Vápník" value={formatNumber(parameters.calcium)} unit="mg/l" status="good" description="Ca" limit={limits.calcium} />
-            <ParameterCard icon={Waves} label="Hořčík" value={formatNumber(parameters.magnesium)} unit="mg/l" status="good" description="Mg" limit={limits.magnesium} />
-            <ParameterCard icon={Beaker} label="Chloridy" value={formatNumber(parameters.chlorides)} unit="mg/l" status="good" description="Cl⁻" limit={{ max: 250, optimal: [0, 100] }} />
-            <ParameterCard icon={Beaker} label="Sírany" value={formatNumber(parameters.sulfates)} unit="mg/l" status="good" description="SO₄²⁻" limit={{ max: 250, optimal: [0, 150] }} />
+            {CHEMICAL.map(({ key, icon }) => card(key, icon))}
           </div>
         </section>
 
@@ -232,9 +304,7 @@ export default function KvalitaClient({ quality, historical, sources, limits, me
             <h2 className="text-2xl font-mono font-bold text-earth-900">Bakteriologické parametry</h2>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <ParameterCard icon={AlertCircle} label="E. coli" value={bacteriological.ecoli} unit="KTJ/100ml" status="good" description="Escherichia coli" limit={{ max: 0, optimal: [0, 0] }} />
-            <ParameterCard icon={AlertCircle} label="Enterokoky" value={bacteriological.enterococci} unit="KTJ/100ml" status="good" description="Intestinální enterokoky" limit={{ max: 0, optimal: [0, 0] }} />
-            <ParameterCard icon={AlertCircle} label="Koliformní bakterie" value={bacteriological.coliformBacteria} unit="KTJ/100ml" status="good" description="Celkové koliformní bakterie" limit={{ max: 0, optimal: [0, 0] }} />
+            {BACTERIA.map((key) => card(key, AlertCircle))}
           </div>
         </section>
 
@@ -243,30 +313,46 @@ export default function KvalitaClient({ quality, historical, sources, limits, me
             <TrendingUp className="h-6 w-6 text-water-600" />
             <h2 className="text-2xl font-mono font-bold text-earth-900">Historie měření</h2>
           </div>
+          <p className="text-earth-700 mb-4">
+            Archiv čtvrtletních rozborů Vodárny Zlín. Každý řádek vede na
+            zdrojový dokument.
+          </p>
           <div className="glass-card overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead className="bg-water-50">
                   <tr>
-                    <th className="px-4 py-3 text-left text-sm font-mono font-bold text-earth-900">Datum</th>
-                    <th className="px-4 py-3 text-right text-sm font-mono font-bold text-earth-900">Tvrdost (°dH)</th>
+                    <th className="px-4 py-3 text-left text-sm font-mono font-bold text-earth-900">Období</th>
+                    <th className="px-4 py-3 text-left text-sm font-mono font-bold text-earth-900">Úpravna</th>
+                    <th className="px-4 py-3 text-right text-sm font-mono font-bold text-earth-900">Tvrdost (mmol/l)</th>
                     <th className="px-4 py-3 text-right text-sm font-mono font-bold text-earth-900">pH</th>
                     <th className="px-4 py-3 text-right text-sm font-mono font-bold text-earth-900">Dusičnany (mg/l)</th>
-                    <th className="px-4 py-3 text-right text-sm font-mono font-bold text-earth-900">Skóre</th>
+                    <th className="px-4 py-3 text-right text-sm font-mono font-bold text-earth-900">Železo (mg/l)</th>
+                    <th className="px-4 py-3 text-right text-sm font-mono font-bold text-earth-900">Index</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-water-100">
-                  {historical.map((row, index) => (
-                    <tr key={index} className="hover:bg-water-50/50 transition-colors">
-                      <td className="px-4 py-3 text-sm text-earth-700">{formatDate(row.date)}</td>
-                      <td className="px-4 py-3 text-sm text-right font-mono text-earth-900">{formatNumber(row.hardness)}</td>
-                      <td className="px-4 py-3 text-sm text-right font-mono text-earth-900">{formatNumber(row.pH, 1)}</td>
-                      <td className="px-4 py-3 text-sm text-right font-mono text-earth-900">{formatNumber(row.nitrates)}</td>
-                      <td className="px-4 py-3 text-sm text-right">
-                        <span className="font-mono font-bold text-fresh-600">{row.score}</span>
-                      </td>
-                    </tr>
-                  ))}
+                  {history.flatMap((row) =>
+                    row.plants.map((plant, index) => (
+                      <tr key={`${row.period}-${plant.id}`} className="hover:bg-water-50/50 transition-colors">
+                        <td className="px-4 py-3 text-sm text-earth-700">
+                          {index === 0 && (
+                            <a href={row.sourceUrl} target="_blank" rel="noopener noreferrer" className="text-water-700 underline underline-offset-4">
+                              {formatPeriodShort(row.period)}
+                            </a>
+                          )}
+                        </td>
+                        <td className="px-4 py-3 text-sm text-earth-700">{plantName(plant.id)}</td>
+                        <td className="px-4 py-3 text-sm text-right font-mono text-earth-900">{plant.hardness}</td>
+                        <td className="px-4 py-3 text-sm text-right font-mono text-earth-900">{plant.pH}</td>
+                        <td className="px-4 py-3 text-sm text-right font-mono text-earth-900">{plant.nitrates}</td>
+                        <td className="px-4 py-3 text-sm text-right font-mono text-earth-900">{plant.iron}</td>
+                        <td className="px-4 py-3 text-sm text-right">
+                          <span className="font-mono font-bold text-fresh-600">{plant.score}</span>
+                        </td>
+                      </tr>
+                    )),
+                  )}
                 </tbody>
               </table>
             </div>
@@ -280,8 +366,9 @@ export default function KvalitaClient({ quality, historical, sources, limits, me
               <div>
                 <h3 className="font-mono font-bold text-earth-900 mb-2">O datech</h3>
                 <p className="text-sm text-earth-700 mb-3">
-                  Data o kvalitě vody jsou získávána z veřejně dostupných zdrojů
-                  a aktualizována {meta.updateFrequency}.
+                  Data stahujeme automaticky z veřejných dokumentů Vodárny Zlín.
+                  Web jednou týdně kontroluje, zda nevyšel nový rozbor; Vodárna
+                  je zveřejňuje čtvrtletně.
                 </p>
                 <div className="flex flex-wrap gap-2">
                   {meta.sources.map((source) => (

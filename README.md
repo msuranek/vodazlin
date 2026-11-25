@@ -75,7 +75,15 @@ cd frontend
 npm run update-data
 ```
 
-Data se stahují z [Vodárny Zlín](https://www.vodarnazlin.cz) a ukládají do `frontend/data/`. Síťová aktualizace je záměrně oddělená od běžného lokálního buildu, který lze sestavit z posledního uloženého snapshotu.
+Data se stahují z veřejných stránek [Vodárny Zlín](https://www.vodarnazlin.cz) a ukládají do `frontend/content/` (verzováno v gitu):
+
+- `quality/RRRR-Qn.json` – čtvrtletní rozbory kvality vody pro ÚV Tlumačov a ÚV Klečůvka (archiv = historie),
+- `documents.json` – rozhodnutí o výjimkách a další dokumenty ke kvalitě vody,
+- `hardness-by-municipality.json` – tvrdost vody po obcích,
+- `supply-areas.json` – obce zásobované jednotlivými úpravnami,
+- `pricing/RRRR.json` – ceník vodného a stočného.
+
+Soubor se přepíše jen tehdy, když nová data projdou validací (limity, rozsahy, kontrola tvrdosti proti Ca + Mg) a obsah se změnil. Build čte jen tato data a síť nepotřebuje. V GitHub Actions běží kontrola jednou týdně a změněná data se automaticky commitnou.
 
 ## Testy
 
@@ -84,7 +92,7 @@ cd frontend
 npm test
 ```
 
-Testy používají uložené fixtures zdrojového HTML a textu extrahovaného z PDF. Pokrývají parsování cen a tvrdosti, převod jednotek, kontrolu nepravděpodobných hodnot a výpočet orientačního skóre kvality.
+Testy používají uložené fixtures zdrojového HTML a textu extrahovaného z PDF (dva různé layouty kvartálních reportů). Pokrývají výběr reportů, mapování sloupců úpraven, hodnoty pod mezí stanovitelnosti, validaci, ukládání dat a výpočet orientačního skóre.
 
 ## Technologie
 
@@ -92,7 +100,7 @@ Testy používají uložené fixtures zdrojového HTML a textu extrahovaného z 
 - **Tailwind CSS**
 - **Leaflet** (interaktivní mapa)
 - **Node.js scraper** (`pdf-parse`, Fetch API)
-- **GitHub Actions** (testy, měsíční aktualizace a publikace)
+- **GitHub Actions** (testy, týdenní aktualizace dat a publikace)
 
 ## Struktura
 
@@ -100,7 +108,7 @@ Testy používají uložené fixtures zdrojového HTML a textu extrahovaného z 
 frontend/
 ├── app/                     # Stránky a statický export Next.js
 ├── components/              # Karty, skóre, mapa a layout
-├── data/                    # Aktuální JSON snapshoty (generované)
+├── content/                 # Stažená data Vodárny Zlín (JSON, verzováno)
 ├── lib/                     # Načítání dat a utility
 ├── scripts/
 │   ├── data-parsers.mjs     # Testovatelné parsery a transformace

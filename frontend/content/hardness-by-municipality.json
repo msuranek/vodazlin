@@ -1,0 +1,344 @@
+{
+  "year": 2025,
+  "sourceUrl": "https://www.vodarnazlin.cz/res/archive/002/001585.pdf?seek=1734076813",
+  "sourcePage": "https://www.vodarnazlin.cz/o-nas/pitna-voda/tvrdost-vody/",
+  "municipalities": [
+    {
+      "name": "Biskupice",
+      "hardnessMmol": 1.6
+    },
+    {
+      "name": "Nevšová",
+      "hardnessMmol": 1.3
+    },
+    {
+      "name": "Bohuslavice n. V.",
+      "hardnessMmol": 0.9
+    },
+    {
+      "name": "Oldřichovice",
+      "hardnessMmol": 2.4
+    },
+    {
+      "name": "Bohuslavice u ZL.",
+      "hardnessMmol": 2.3
+    },
+    {
+      "name": "Ostrata",
+      "hardnessMmol": 1.6
+    },
+    {
+      "name": "Brumov-Bylnice",
+      "hardnessMmol": 2.5
+    },
+    {
+      "name": "Otrokovice",
+      "hardnessMmol": 2.2
+    },
+    {
+      "name": "Březnice",
+      "hardnessMmol": 2.2
+    },
+    {
+      "name": "Petrůvka",
+      "hardnessMmol": 1.1
+    },
+    {
+      "name": "Březová",
+      "hardnessMmol": 1.9
+    },
+    {
+      "name": "Podhradí",
+      "hardnessMmol": 0.6
+    },
+    {
+      "name": "Dešná",
+      "hardnessMmol": 2
+    },
+    {
+      "name": "Pohořelice",
+      "hardnessMmol": 2.3
+    },
+    {
+      "name": "Divnice",
+      "hardnessMmol": 1.1
+    },
+    {
+      "name": "Polichno",
+      "hardnessMmol": 1.6
+    },
+    {
+      "name": "Dobrkovice",
+      "hardnessMmol": 1.8
+    },
+    {
+      "name": "Poteč",
+      "hardnessMmol": 1
+    },
+    {
+      "name": "Dolní Lhota",
+      "hardnessMmol": 1.2
+    },
+    {
+      "name": "Pozlovice",
+      "hardnessMmol": 1.3
+    },
+    {
+      "name": "Doubravy",
+      "hardnessMmol": 1.6
+    },
+    {
+      "name": "Přečkovice",
+      "hardnessMmol": 1.1
+    },
+    {
+      "name": "Drnovice u VK",
+      "hardnessMmol": 2.4
+    },
+    {
+      "name": "Příluky u ZL.",
+      "hardnessMmol": 1.7
+    },
+    {
+      "name": "Fryšták",
+      "hardnessMmol": 1.9
+    },
+    {
+      "name": "Racková",
+      "hardnessMmol": 2.4
+    },
+    {
+      "name": "Halenkovice",
+      "hardnessMmol": 2.2
+    },
+    {
+      "name": "Rokytnice",
+      "hardnessMmol": 1
+    },
+    {
+      "name": "Horní Lhota",
+      "hardnessMmol": 1
+    },
+    {
+      "name": "Rudimov",
+      "hardnessMmol": 1.6
+    },
+    {
+      "name": "Hostišová",
+      "hardnessMmol": 2.5
+    },
+    {
+      "name": "Řetechov",
+      "hardnessMmol": 1.5
+    },
+    {
+      "name": "Hrobice",
+      "hardnessMmol": 1.5
+    },
+    {
+      "name": "Salaš u ZL.",
+      "hardnessMmol": 2.2
+    },
+    {
+      "name": "Hřivinův Újezd",
+      "hardnessMmol": 1.7
+    },
+    {
+      "name": "Sazovice",
+      "hardnessMmol": 2.3
+    },
+    {
+      "name": "Chlum",
+      "hardnessMmol": 2.3
+    },
+    {
+      "name": "Sehradice",
+      "hardnessMmol": 1.5
+    },
+    {
+      "name": "Jaroslavice",
+      "hardnessMmol": 1.7
+    },
+    {
+      "name": "Slavičín",
+      "hardnessMmol": 1.4
+    },
+    {
+      "name": "Jestřabí",
+      "hardnessMmol": 2.6
+    },
+    {
+      "name": "Slopné",
+      "hardnessMmol": 1.8
+    },
+    {
+      "name": "Kaňovice",
+      "hardnessMmol": 1.6
+    },
+    {
+      "name": "Smolina",
+      "hardnessMmol": 1
+    },
+    {
+      "name": "Karlovice",
+      "hardnessMmol": 2.5
+    },
+    {
+      "name": "Spytihněv",
+      "hardnessMmol": 2.3
+    },
+    {
+      "name": "Kašava (z VDJ Kašava)",
+      "hardnessMmol": 2.1
+    },
+    {
+      "name": "Sv. Štěpán",
+      "hardnessMmol": 2.4
+    },
+    {
+      "name": "Kašava (z ÚV Klečůvka)",
+      "hardnessMmol": 1.6
+    },
+    {
+      "name": "Šarovy",
+      "hardnessMmol": 2.3
+    },
+    {
+      "name": "Kladná Žilín",
+      "hardnessMmol": 1.1
+    },
+    {
+      "name": "Štítná nad Vláří",
+      "hardnessMmol": 2.5
+    },
+    {
+      "name": "Komárov u Napajedel",
+      "hardnessMmol": 2.4
+    },
+    {
+      "name": "Tečovice",
+      "hardnessMmol": 2.4
+    },
+    {
+      "name": "Křekov",
+      "hardnessMmol": 1.1
+    },
+    {
+      "name": "Tichov",
+      "hardnessMmol": 1
+    },
+    {
+      "name": "Lhota u Malenovic",
+      "hardnessMmol": 2.3
+    },
+    {
+      "name": "Tlumačov",
+      "hardnessMmol": 2.4
+    },
+    {
+      "name": "Lhotka",
+      "hardnessMmol": 2.3
+    },
+    {
+      "name": "Újezd u VK",
+      "hardnessMmol": 1.4
+    },
+    {
+      "name": "Lípa nad Dřevnicí",
+      "hardnessMmol": 1.8
+    },
+    {
+      "name": "Valašské Klobouky",
+      "hardnessMmol": 1
+    },
+    {
+      "name": "Lipina",
+      "hardnessMmol": 1
+    },
+    {
+      "name": "Veliková",
+      "hardnessMmol": 1.9
+    },
+    {
+      "name": "Lipová (u Slavičína)",
+      "hardnessMmol": 1.4
+    },
+    {
+      "name": "Velký Ořechov",
+      "hardnessMmol": 1.8
+    },
+    {
+      "name": "Ludkovice",
+      "hardnessMmol": 2.1
+    },
+    {
+      "name": "Vizovice (Kosmata)",
+      "hardnessMmol": 1.3
+    },
+    {
+      "name": "Luhačovice",
+      "hardnessMmol": 1.6
+    },
+    {
+      "name": "Vizovice (z ÚV Klečůvka)",
+      "hardnessMmol": 1.7
+    },
+    {
+      "name": "Lukov",
+      "hardnessMmol": 1.6
+    },
+    {
+      "name": "Vlachova Lhota",
+      "hardnessMmol": 1
+    },
+    {
+      "name": "Lukoveček (z VDJ Lukoveček)",
+      "hardnessMmol": 3.1
+    },
+    {
+      "name": "Vysoké Pole",
+      "hardnessMmol": 2.4
+    },
+    {
+      "name": "Lukoveček (z ÚV Klečůvka)",
+      "hardnessMmol": 1.7
+    },
+    {
+      "name": "Zádveřice - Raková",
+      "hardnessMmol": 1.7
+    },
+    {
+      "name": "Machová",
+      "hardnessMmol": 2.4
+    },
+    {
+      "name": "Zlín - Želechovice",
+      "hardnessMmol": 1.7
+    },
+    {
+      "name": "Mirošov",
+      "hardnessMmol": 1
+    },
+    {
+      "name": "Zlín z ÚV Klečůvka (východní část)",
+      "hardnessMmol": 1.7
+    },
+    {
+      "name": "Mysločovice",
+      "hardnessMmol": 2.4
+    },
+    {
+      "name": "Zlín z ÚV Tlumačov (západní část)",
+      "hardnessMmol": 2.4
+    },
+    {
+      "name": "Napajedla",
+      "hardnessMmol": 2.5
+    },
+    {
+      "name": "Žlutava",
+      "hardnessMmol": 2.3
+    }
+  ],
+  "updatedAt": "2026-11-16T22:07:37.052Z"
+}

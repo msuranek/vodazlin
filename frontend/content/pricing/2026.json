@@ -1,0 +1,22 @@
+{
+  "year": 2026,
+  "validFrom": "2026-01-01",
+  "prices": {
+    "water": {
+      "price": 63.59,
+      "vat": 12,
+      "priceWithVat": 71.22
+    },
+    "sewage": {
+      "price": 59.46,
+      "vat": 12,
+      "priceWithVat": 66.6
+    },
+    "total": {
+      "price": 123.05,
+      "priceWithVat": 137.82
+    }
+  },
+  "sourceUrl": "https://www.vodarnazlin.cz/zakaznici/cena-vody/cena-vodneho-a-stocneho-2026/",
+  "updatedAt": "2026-11-16T22:07:37.136Z"
+}

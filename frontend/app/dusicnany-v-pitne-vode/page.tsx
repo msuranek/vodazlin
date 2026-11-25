@@ -3,7 +3,8 @@ import Link from "next/link";
 import ArticleLayout from "@/components/ArticleLayout";
 import Footer from "@/components/layout/Footer";
 import Header from "@/components/layout/Header";
-import { getWaterQuality, healthLimits } from "@/lib/server-data";
+import { getLatestReport, numericValue, periodLabel } from "@/lib/server-data";
+import { plants } from "@/lib/data";
 import { formatNumber } from "@/lib/utils";
 
 export const metadata: Metadata = {
@@ -12,9 +13,8 @@ export const metadata: Metadata = {
 };
 
 export default function DusicnanyPage() {
-  const quality = getWaterQuality();
-  const value = quality.parameters.nitrates;
-  const limit = healthLimits.nitrates.max;
+  const report = getLatestReport();
+  const limit = report.limits.nitrates.max;
 
   return (
     <div className="min-h-screen flex flex-col relative">
@@ -25,10 +25,26 @@ export default function DusicnanyPage() {
       >
         <h2>Aktuální hodnota ve Zlíně</h2>
         <p>
-          V přehledu VodaZlín.cz je uvedeno {formatNumber(value)} mg/l.
-          Hygienický limit používaný v přehledu je {formatNumber(limit, 0)} mg/l,
-          takže hodnota odpovídá zhruba {formatNumber((value / limit) * 100, 0)} %
-          limitu.
+          Podle rozboru Vodárny Zlín za {periodLabel(report.period)} obsahovala
+          voda z úpraven zásobujících Zlín tyto koncentrace dusičnanů
+          (hygienický limit {formatNumber(limit, 0)} mg/l):
+        </p>
+        <ul>
+          {plants.map((plant) => {
+            const measurement = report.plants[plant.id].nitrates;
+            return (
+              <li key={plant.id}>
+                {plant.name}: {measurement.raw} mg/l, tj. zhruba{" "}
+                {formatNumber((numericValue(measurement) / limit) * 100, 0)} % limitu
+              </li>
+            );
+          })}
+        </ul>
+        <p>
+          Zdroj:{" "}
+          <a href={report.sourceUrl} target="_blank" rel="noopener noreferrer">
+            {report.title}
+          </a>.
         </p>
         <p>
           Tato rezerva je užitečná pro rychlou orientaci, ale sama o sobě

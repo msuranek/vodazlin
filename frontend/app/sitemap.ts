@@ -1,4 +1,5 @@
 import type { MetadataRoute } from "next";
+import { getDataMetadata } from "@/lib/server-data";
 
 const routes = [
   "",
@@ -19,9 +20,10 @@ const routes = [
 ];
 
 export default function sitemap(): MetadataRoute.Sitemap {
+  const lastModified = new Date(getDataMetadata().updatedAt);
   return routes.map((route) => ({
     url: `https://www.vodazlin.cz${route}/`,
-    lastModified: new Date(),
+    lastModified,
     changeFrequency: route === "" ? "weekly" : "monthly",
     priority: route === "" ? 1 : 0.7,
   }));

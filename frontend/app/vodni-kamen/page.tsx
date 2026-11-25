@@ -3,7 +3,7 @@ import Link from "next/link";
 import ArticleLayout from "@/components/ArticleLayout";
 import Footer from "@/components/layout/Footer";
 import Header from "@/components/layout/Header";
-import { getWaterQuality } from "@/lib/server-data";
+import { getWaterSources, periodLabel } from "@/lib/server-data";
 import { formatNumber } from "@/lib/utils";
 
 export const metadata: Metadata = {
@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 };
 
 export default function VodniKamenPage() {
-  const quality = getWaterQuality();
+  const sources = getWaterSources();
 
   return (
     <div className="min-h-screen flex flex-col relative">
@@ -28,8 +28,14 @@ export default function VodniKamenPage() {
           tělesech, bateriích a v konvicích.
         </p>
         <p>
-          Orientační tvrdost v centrálním přehledu je {formatNumber(quality.parameters.hardness)} °dH.
-          To odpovídá vodě, u které má smysl počítat s běžnou údržbou spotřebičů.
+          Podle rozboru Vodárny Zlín za {periodLabel(sources[0].period)} má voda z{" "}
+          {sources.map((source, index) => (
+            <span key={source.id}>
+              {index > 0 && " a z "}
+              {source.name} {formatNumber(source.hardness)} °dH ({source.waterType})
+            </span>
+          ))}.
+          U obou zdrojů má smysl počítat s běžnou údržbou spotřebičů.
         </p>
         <p>
           Typickým místem, kde si vodního kamene všimnete nejdřív, je rychlovarná

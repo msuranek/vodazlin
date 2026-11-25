@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import HomeClient from "./HomeClient";
-import { getDataMetadata, getWaterQuality, getWaterPricing } from "@/lib/server-data";
+import { getDataMetadata, getLatestReport, getLimitExceedances, getWaterPricing, getWaterSources } from "@/lib/server-data";
 
 export const metadata: Metadata = {
   title: "VodaZlín.cz - kvalita pitné vody ve Zlíně",
@@ -8,8 +8,18 @@ export const metadata: Metadata = {
 };
 
 export default async function Home() {
-  const quality = getWaterQuality();
+  const report = getLatestReport();
+  const sources = getWaterSources();
   const pricing = getWaterPricing();
   const meta = getDataMetadata();
-  return <HomeClient quality={quality} pricing={pricing} meta={meta} />;
+  const allWithinLimits = getLimitExceedances(report).length === 0;
+  return (
+    <HomeClient
+      report={report}
+      sources={sources}
+      allWithinLimits={allWithinLimits}
+      pricing={pricing}
+      meta={meta}
+    />
+  );
 }

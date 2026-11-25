@@ -14,9 +14,8 @@ import {
   ChevronUp,
   Loader2,
 } from "lucide-react";
-import { formatNumber } from "@/lib/utils";
-import { cn } from "@/lib/utils";
-import type { dataMetadata, waterSources, zlínDistricts } from "@/lib/data";
+import { cn, formatNumber, getScoreLabel } from "@/lib/utils";
+import type { DataMetadata, DistrictSummary, PlantSummary, QualityDocument } from "@/lib/types";
 
 const ZlinMap = dynamic(() => import("@/components/ZlinMap"), {
   ssr: false,
@@ -31,18 +30,28 @@ const ZlinMap = dynamic(() => import("@/components/ZlinMap"), {
 });
 
 interface Props {
-  sources: typeof waterSources;
-  districts: typeof zlínDistricts;
-  meta: typeof dataMetadata;
+  sources: PlantSummary[];
+  districts: DistrictSummary[];
+  documents: QualityDocument[];
+  meta: DataMetadata;
 }
 
-export default function MapaClient({ sources, districts, meta }: Props) {
+export default function MapaClient({ sources, districts, documents, meta }: Props) {
   const [selectedDistrict, setSelectedDistrict] = useState<string | null>(null);
   const [selectedSource, setSelectedSource] = useState<string | null>(null);
   const [expandedAreas, setExpandedAreas] = useState(false);
 
   const selectedDistrictData = districts.find(d => d.id === selectedDistrict);
   const selectedSourceData = sources.find(s => s.id === selectedSource);
+  // Dokumenty (např. rozhodnutí o výjimce), jejichž název zmiňuje zásobovanou obec.
+  const sourceDocuments = selectedSourceData
+    ? documents.filter((doc) =>
+        selectedSourceData.servesAreas.some((area) => {
+          const name = area.replace(/^část obce\s+/i, "");
+          return name.length > 3 && doc.title.includes(name);
+        }),
+      )
+    : [];
 
   return (
     <div className="min-h-screen flex flex-col relative">
@@ -57,11 +66,8 @@ export default function MapaClient({ sources, districts, meta }: Props) {
             Vyberte městskou část nebo zdroj vody pro zobrazení detailních informací.
           </p>
           <p className="text-sm text-earth-600 mt-3">
-            Poslední aktualizace podkladů k tvrdosti vody: {new Intl.DateTimeFormat("cs-CZ", {
-              day: "numeric",
-              month: "long",
-              year: "numeric",
-            }).format(new Date(meta.waterQualityUpdatedAt))}
+            Tvrdost a index podle rozboru Vodárny Zlín za {meta.latestPeriodLabel}.
+            Zásobované obce podle přehledu provozovaných vodovodů Vodárny Zlín.
           </p>
         </section>
 
@@ -72,9 +78,10 @@ export default function MapaClient({ sources, districts, meta }: Props) {
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-earth-700 leading-relaxed">
               <p>
-                Mapa spojuje městské části se zdroji vody a orientační tvrdostí.
-                Slouží hlavně k rychlé orientaci, odkud může voda v dané části
-                Zlína pocházet a jaké hodnoty lze očekávat.
+                Mapa spojuje městské části se zdroji vody a jejich tvrdostí.
+                Vodárna Zlín uvádí, že východní část Zlína zásobuje ÚV Klečůvka
+                a západní část ÚV Tlumačov; přiřazení jednotlivých čtvrtí je
+                proto jen hrubé.
               </p>
               <p>
                 Základní informace jsou uvedené i mimo mapu, aby byly dostupné
@@ -123,7 +130,7 @@ export default function MapaClient({ sources, districts, meta }: Props) {
                         <div className="flex justify-between text-sm">
                           <span className="text-earth-600">Tvrdost:</span>
                           <span className="font-mono font-medium text-earth-900">
-                            {source.hardness} °dH
+                            {formatNumber(source.hardness)} °dH
                           </span>
                         </div>
                       </div>
@@ -166,7 +173,7 @@ export default function MapaClient({ sources, districts, meta }: Props) {
                           )}
                         />
                         <span className="text-xs text-earth-600">
-                          {district.hardness} °dH
+                          {formatNumber(district.hardness)} °dH
                         </span>
                       </div>
                     </button>
@@ -214,20 +221,14 @@ export default function MapaClient({ sources, districts, meta }: Props) {
                         </div>
                         <div>
                           <p className="font-medium text-earth-900">Kvalita vody</p>
-                          <p className="text-sm text-fresh-600">Vynikající</p>
+                          <p className="text-sm text-fresh-600">{getScoreLabel(selectedDistrictData.quality)}</p>
                         </div>
                       </div>
                       <div className="space-y-3">
                         <div className="flex justify-between py-2 border-b border-water-100">
                           <span className="text-earth-600">Tvrdost vody:</span>
                           <span className="font-mono font-bold text-earth-900">
-                            {selectedDistrictData.hardness} °dH
-                          </span>
-                        </div>
-                        <div className="flex justify-between py-2 border-b border-water-100">
-                          <span className="text-earth-600">Počet obyvatel:</span>
-                          <span className="font-mono font-bold text-earth-900">
-                            {selectedDistrictData.population.toLocaleString("cs-CZ")}
+                            {formatNumber(selectedDistrictData.hardness)} °dH
                           </span>
                         </div>
                         <div className="flex justify-between py-2">
@@ -242,8 +243,8 @@ export default function MapaClient({ sources, districts, meta }: Props) {
                           <Info className="inline h-4 w-4 mr-1" />
                           Voda v této oblasti je klasifikována jako{" "}
                           <span className="font-medium">
-                            {selectedDistrictData.hardness < 10 ? "měkká až středně tvrdá" : "středně tvrdá"}
-                          </span>.
+                            {sources.find(s => s.id === selectedDistrictData.mainSource)?.waterType}
+                          </span>. Přiřazení čtvrti k úpravně je orientační.
                         </p>
                       </div>
                     </div>
@@ -273,13 +274,13 @@ export default function MapaClient({ sources, districts, meta }: Props) {
                         <div className="flex justify-between py-2 border-b border-water-100">
                           <span className="text-earth-600">Tvrdost:</span>
                           <span className="font-mono font-bold text-earth-900">
-                            {selectedSourceData.hardness} °dH
+                            {formatNumber(selectedSourceData.hardness)} °dH
                           </span>
                         </div>
                         <div className="flex justify-between py-2">
                           <span className="text-earth-600">Tvrdost (mmol/l):</span>
                           <span className="font-mono font-bold text-earth-900">
-                            {selectedSourceData.hardnessMmol} mmol/l
+                            {formatNumber(selectedSourceData.hardnessMmol, 2)} mmol/l
                           </span>
                         </div>
                       </div>
@@ -313,6 +314,25 @@ export default function MapaClient({ sources, districts, meta }: Props) {
                           )}
                         </div>
                       </div>
+                      {sourceDocuments.length > 0 && (
+                        <div className="p-3 rounded-lg bg-yellow-50 border border-yellow-200">
+                          <p className="text-sm font-medium text-earth-900 mb-1">
+                            Dokumenty pro část oblasti:
+                          </p>
+                          <ul className="space-y-1">
+                            {sourceDocuments.map((doc) => (
+                              <li key={doc.url}>
+                                <a href={doc.url} target="_blank" rel="noopener noreferrer" className="text-sm text-water-700 underline underline-offset-4">
+                                  {doc.title}
+                                </a>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+                      <a href={selectedSourceData.sourceUrl} target="_blank" rel="noopener noreferrer" className="block text-xs text-water-700 underline underline-offset-4">
+                        Zdroj: rozbor Vodárny Zlín za {meta.latestPeriodLabel} (PDF)
+                      </a>
                     </div>
                   </>
                 ) : (
@@ -373,7 +393,7 @@ export default function MapaClient({ sources, districts, meta }: Props) {
                     {district.name}
                   </h3>
                   <p className="text-sm text-earth-700 leading-relaxed">
-                    Orientační tvrdost {district.hardness} °dH. Hlavní zdroj:
+                    Tvrdost {formatNumber(district.hardness)} °dH. Hlavní zdroj:
                     {" "}{source?.name ?? "neuvedeno"}. Kvalita v přehledu:
                     {" "}{district.quality}/100.
                   </p>

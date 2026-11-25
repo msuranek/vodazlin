@@ -89,6 +89,15 @@ export function getScoreLabel(score: number): string {
   return "Nevyhovující";
 }
 
+// Slovní označení tvrdosti podle °dH (stejné stupně jako legenda mapy).
+export function getHardnessLabel(hardnessDh: number): string {
+  if (hardnessDh < 2.8) return "velmi měkká";
+  if (hardnessDh < 7) return "měkká";
+  if (hardnessDh < 14) return "středně tvrdá";
+  if (hardnessDh < 21) return "tvrdá";
+  return "velmi tvrdá";
+}
+
 // Formátování data
 export function formatDate(date: Date | string): string {
   const d = typeof date === 'string' ? new Date(date) : date;
